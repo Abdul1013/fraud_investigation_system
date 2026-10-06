@@ -1,0 +1,14 @@
+#
+# ============================================================================
+# FILE:        src/main/resources/policies/retention-policy.yml
+# PURPOSE:     Placeholder for versioned data-retention policy.
+# OWNER:       Audit, Reporting & Compliance
+# SINCE:       week-26
+# RELATED:     ADR-002, ADR-005
+# NOTES:
+#   - TODO(week-26): map retention periods to classification and regulation.
+#   - No automated retention action is configured.
+# ============================================================================
+#
+version: 1
+policies: []

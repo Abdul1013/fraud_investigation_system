@@ -1,0 +1,14 @@
+#
+# ============================================================================
+# FILE:        src/main/resources/policies/routing-policy.yml
+# PURPOSE:     Versioned placeholder for model task routing policy.
+# OWNER:       Platform & Operations
+# SINCE:       week-26
+# RELATED:     ADR-003
+# NOTES:
+#   - TODO(week-27): define task-to-tier routing with approved providers.
+#   - No model provider is selected by this placeholder.
+# ============================================================================
+#
+version: 1
+routes: []

@@ -1,0 +1,14 @@
+#
+# ============================================================================
+# FILE:        src/main/resources/policies/allowlist.yml
+# PURPOSE:     Versioned placeholder for permitted low-risk action policies.
+# OWNER:       Decision & Action
+# SINCE:       week-26
+# RELATED:     ADR-002
+# NOTES:
+#   - TODO(week-26): define reviewed action classes and approval requirements.
+#   - No write action is allowlisted by this empty policy.
+# ============================================================================
+#
+version: 1
+actions: []
