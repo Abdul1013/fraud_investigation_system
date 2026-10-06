@@ -1,0 +1,13 @@
+--
+-- ============================================================================
+-- FILE:        src/main/resources/db/migration/V4__decision_tables.sql
+-- PURPOSE:     Reserves decision and approval persistence tables.
+-- OWNER:       Decision & Action
+-- SINCE:       week-26
+-- RELATED:     ADR-002
+-- NOTES:
+--   - TODO(week-27): add recommendation, approval, and action tables.
+--   - Preserve the signed-token write gate and decision-audit transaction.
+-- ============================================================================
+--
+SELECT 1;

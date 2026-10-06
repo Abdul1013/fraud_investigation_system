@@ -1,0 +1,13 @@
+--
+-- ============================================================================
+-- FILE:        src/main/resources/db/migration/V6__platform_tables.sql
+-- PURPOSE:     Reserves platform operational persistence tables.
+-- OWNER:       Platform & Operations
+-- SINCE:       week-26
+-- RELATED:     ADR-001
+-- NOTES:
+--   - TODO(week-27): add platform-owned operational tables as needed.
+--   - This migration is intentionally a no-op placeholder.
+-- ============================================================================
+--
+SELECT 1;

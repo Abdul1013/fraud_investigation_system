@@ -1,0 +1,13 @@
+--
+-- ============================================================================
+-- FILE:        src/main/resources/db/migration/V3__case_tables.sql
+-- PURPOSE:     Reserves the case-management schema migration.
+-- OWNER:       Case Management
+-- SINCE:       week-26
+-- RELATED:     ADR-001
+-- NOTES:
+--   - TODO(week-27): add case and state-transition tables.
+--   - This migration is intentionally a no-op placeholder.
+-- ============================================================================
+--
+SELECT 1;

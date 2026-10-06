@@ -1,14 +1,12 @@
 --
--- ============================================================================
 -- FILE:        src/main/resources/db/migration/V2__knowledge_tables.sql
 -- PURPOSE:     Creates the versioned knowledge, chunk, and vector-store tables.
 -- OWNER:       Knowledge & Evidence
--- SINCE:       week-26
+-- SINCE:       week-2
 -- RELATED:     ADR-005
 -- NOTES:
---   - TODO(week-26): add tenant-specific retention and access policies.
+--   - TODO(week-2): add tenant-specific retention and access policies.
 --   - Vector dimensions currently match the scaffold embedding contract.
--- ============================================================================
 --
 
 -- enable required extensions for vector and hstore support

@@ -1,0 +1,13 @@
+--
+-- ============================================================================
+-- FILE:        src/main/resources/db/migration/V5__audit_tables.sql
+-- PURPOSE:     Reserves append-only audit persistence tables.
+-- OWNER:       Audit, Reporting & Compliance
+-- SINCE:       week-26
+-- RELATED:     ADR-002
+-- NOTES:
+--   - TODO(week-27): add tamper-evident audit and outbox tables.
+--   - Audit writes must share the decision transaction.
+-- ============================================================================
+--
+SELECT 1;
