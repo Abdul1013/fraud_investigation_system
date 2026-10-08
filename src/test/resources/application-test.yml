@@ -1,0 +1,7 @@
+spring:
+  batch:
+    job:
+      enabled: false
+knowledge:
+  embedding-provider: local
+  reports-directory: target/test-reports

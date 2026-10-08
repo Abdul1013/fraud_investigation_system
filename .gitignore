@@ -1,0 +1,25 @@
+# Java / Maven
+/target/
+**/target/
+*.class
+*.log
+*.jar
+*.war
+*.ear
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+
+# Local secrets
+.env
+.env.*
+!.env.example
+
+# Local ingestion raw sources and generated reports
+/knowledge-raw/
+/reports/

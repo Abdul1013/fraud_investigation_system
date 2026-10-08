@@ -1,0 +1,23 @@
+#
+# ============================================================================
+# FILE:        src/main/resources/application-local.yml
+# PURPOSE:     Local development overrides for the fraud investigation engine.
+# OWNER:       Platform & Operations
+# SINCE:       week-26
+# RELATED:     ADR-001
+# NOTES:
+#   - TODO(week-26): align local credentials with developer secret management.
+#   - Local model-provider credentials are not required to start the application.
+# ============================================================================
+#
+spring:
+  batch:
+    jdbc:
+      initialize-schema: always
+
+management:
+  endpoint:
+    health:
+      show-details: always
+server:
+  address: 127.0.0.1

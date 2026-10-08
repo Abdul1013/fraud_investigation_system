@@ -1,0 +1,40 @@
+server:
+  port: 8080
+spring:
+  autoconfigure:
+    exclude: org.springframework.ai.vectorstore.pgvector.autoconfigure.PgVectorStoreAutoConfiguration
+  application:
+    name: fraud-investigation-engine
+  datasource:
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/fraud}
+    username: ${POSTGRES_USER:fraud}
+    password: ${POSTGRES_PASSWORD:fraud}
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
+  ai:
+    model:
+      chat: none
+      embedding: ${AI_EMBEDDING_MODEL:none}
+    openai:
+      api-key: ${OPENAI_API_KEY:local-unused}
+      embedding:
+        options:
+          model: text-embedding-3-small
+          dimensions: 1536
+    vectorstore:
+      pgvector:
+        initialize-schema: false
+knowledge:
+  embedding-provider: ${EMBEDDING_PROVIDER:local}
+  reports-directory: ${INGESTION_REPORTS_DIRECTORY:reports}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

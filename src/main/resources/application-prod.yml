@@ -1,0 +1,16 @@
+#
+# ============================================================================
+# FILE:        src/main/resources/application-prod.yml
+# PURPOSE:     Production profile placeholders for deployment-specific settings.
+# OWNER:       Platform & Operations
+# SINCE:       week-26
+# RELATED:     ADR-001
+# NOTES:
+#   - TODO(week-34): define production resource, security, and telemetry settings.
+#   - Secrets must be supplied by the deployment environment.
+# ============================================================================
+#
+spring:
+  batch:
+    jdbc:
+      initialize-schema: never
