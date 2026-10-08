@@ -1,36 +1,17 @@
 package com.fraudengine.knowledge.ingestion.batch;
 
-import org.springframework.ai.document.Document;
+import com.fraudengine.knowledge.ingestion.transformer.*;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.util.List;
-
+/** Pure transformation; transactional deduplication belongs to the writer. */
 public class IngestionProcessor implements ItemProcessor<DocumentBatch, DocumentBatch> {
-
-    private final MetadataEnricherTransformer enricher;
-    private final StrucutreAwareChunker chunker;
-    private final JdbcTemplate jdbcTemplate;
-
-    public IngestionProcessor(JdbcTemplate jdbcTemplate) {
-        this.enricher = new MetadataEnricherTransformer();
-        this.chunker = new StructureAwareChunker();
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final MetadataEnricherTransformer enricher = new MetadataEnricherTransformer();
+    private final StructureAwareChunker chunker = new StructureAwareChunker();
 
     @Override
-    public DocumentBatch process(DocumentBatch batch) throws Exception {
-        // Implementation for processing each document batch
-
-        //1. enrich metadata
-        List<Document> enriched = enricher.apply(batch.documents());
-
-        // 2. chunck ny doc_type
-        List<Document> chunks = chunker.apply(enriched);
-
-        //3. deduplicate  
-        var deduplicated = new DeduplicationTransformer(jdbcTemplate, batch.sourceId(), batch.sourceVersion(), batch.docType(), unique);
-
+    public DocumentBatch process(DocumentBatch batch) {
+        if (batch.classification().equals("C3") || batch.docType().equals("kyc"))
+            return batch.withDocuments(java.util.List.of());
+        return batch.withDocuments(chunker.apply(enricher.apply(batch.documents())));
     }
-
 }
