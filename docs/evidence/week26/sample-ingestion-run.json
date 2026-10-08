@@ -1,0 +1,154 @@
+{
+  "runId": 1,
+  "status": "COMPLETED",
+  "failures": [],
+  "startedAt": "2026-10-07T11:01:53.791343Z",
+  "completedAt": "2026-10-07T10:01:54.268050Z",
+  "chunksCreated": 42,
+  "corpusVersion": 1,
+  "jobInstanceId": 1,
+  "documentsProcessed": 11,
+  "sourceTraceability": {
+    "kyc/kyc-sample-001@1": {
+      "rawUri": "file:///Users/user/IT/fraud_investigation_system/knowledge-raw/0f7390928b3426326e22048a0dfee0d91ed47b952f43373d2954800b2df0640e.md",
+      "docType": "kyc",
+      "checksum": "0f7390928b3426326e22048a0dfee0d91ed47b952f43373d2954800b2df0640e",
+      "chunkIds": [],
+      "sourceVersion": 1,
+      "classification": "C3"
+    },
+    "policies/aml-policy@2": {
+      "rawUri": "file:///Users/user/IT/fraud_investigation_system/knowledge-raw/2b2a4ea6ff25cbf13fb3cc1949d4608cd14e1506a090e0fdb0c3427a7c07676d.md",
+      "docType": "policy",
+      "checksum": "2b2a4ea6ff25cbf13fb3cc1949d4608cd14e1506a090e0fdb0c3427a7c07676d",
+      "chunkIds": [
+        "173e1019-28b6-3ffe-8ef1-1624ebd44673",
+        "f11b7f0c-b81c-3e96-800d-3c862bf467d1",
+        "b8e0ec4c-8a67-37b8-ab84-facded6e742f"
+      ],
+      "sourceVersion": 2,
+      "classification": "C0"
+    },
+    "policies/refund-policy@1": {
+      "rawUri": "file:///Users/user/IT/fraud_investigation_system/knowledge-raw/fc94ba6a52ddac0ff11f1ebde30945d14cfb07aca777e20cb390c6566ab9a2b0.md",
+      "docType": "policy",
+      "checksum": "fc94ba6a52ddac0ff11f1ebde30945d14cfb07aca777e20cb390c6566ab9a2b0",
+      "chunkIds": [
+        "c125813e-500a-3bdd-801c-f54efbcf533d",
+        "78ef47f8-ae89-3839-8d26-71d305eeadbd",
+        "1f6874e4-3c02-3530-b234-3dee0ebf2c49"
+      ],
+      "sourceVersion": 1,
+      "classification": "C0"
+    },
+    "prior-cases/case-2024-001@1": {
+      "rawUri": "file:///Users/user/IT/fraud_investigation_system/knowledge-raw/a3886cb7fbeac0da374b84f5c0b174f1469caf4cb9fba9af10426ee8d9494f51.md",
+      "docType": "prior_case",
+      "checksum": "a3886cb7fbeac0da374b84f5c0b174f1469caf4cb9fba9af10426ee8d9494f51",
+      "chunkIds": [
+        "18593e0f-700d-3c4a-aaeb-c58cd3eb7abc",
+        "82f934c7-54bf-3263-8f45-8049533d7ac0",
+        "98b3f02e-0daf-3584-a6e7-8adf334a8538",
+        "0f5ef278-cc9f-3904-9203-8b6fd0699026",
+        "ab4a2a62-8393-309c-b4bf-5660ba9aa8c8"
+      ],
+      "sourceVersion": 1,
+      "classification": "C2"
+    },
+    "prior-cases/case-2024-002@1": {
+      "rawUri": "file:///Users/user/IT/fraud_investigation_system/knowledge-raw/8dbbfb1cf0bb0897c7181424f02fc7ad413fa382487b486197d03077125b63f9.md",
+      "docType": "prior_case",
+      "checksum": "8dbbfb1cf0bb0897c7181424f02fc7ad413fa382487b486197d03077125b63f9",
+      "chunkIds": [
+        "8175e7af-6c2d-39b5-9466-f5d673a948b3",
+        "de0bc155-a218-36fa-9912-f1dc69576948",
+        "80ca065b-8bc2-30bd-8ca4-020bbc446c93",
+        "7e87fdee-6f56-3ef5-b6a1-10d4cd66d469",
+        "3d103e86-9bfb-38d9-9e4a-c57df89181ee"
+      ],
+      "sourceVersion": 1,
+      "classification": "C2"
+    },
+    "prior-cases/case-2024-003@1": {
+      "rawUri": "file:///Users/user/IT/fraud_investigation_system/knowledge-raw/b2e01616899be5962f6ea00207513985179651f64d1b0a14c61876d147eec53e.md",
+      "docType": "prior_case",
+      "checksum": "b2e01616899be5962f6ea00207513985179651f64d1b0a14c61876d147eec53e",
+      "chunkIds": [
+        "34e67aa9-e595-34fe-8a15-68f0dc7cae60",
+        "9142bd5c-29e1-3da4-84f6-81d442cfb9b6",
+        "d6b17993-59fd-3c44-983e-3e5ecc81da07",
+        "34da2f5f-05f4-3bfc-b7e5-6334c330236a",
+        "6251989c-ff7a-35e9-8fce-76bb0d5f6aef"
+      ],
+      "sourceVersion": 1,
+      "classification": "C2"
+    },
+    "prior-cases/case-2024-004@1": {
+      "rawUri": "file:///Users/user/IT/fraud_investigation_system/knowledge-raw/e1b59a80e84034f5bd51730783ba42bba211a8f7719da51830c8dfb6b45c6e38.md",
+      "docType": "prior_case",
+      "checksum": "e1b59a80e84034f5bd51730783ba42bba211a8f7719da51830c8dfb6b45c6e38",
+      "chunkIds": [
+        "c87c2ec3-d34c-3b5e-8259-20160704badb",
+        "5f1daaca-90a0-3306-bee0-7670c174c23e",
+        "f017e446-dcd9-3b49-bdf8-be0261118741",
+        "fb2f7ca3-f5d5-3345-9488-b01e0e7cb7e2",
+        "e62360fb-95ad-3a24-bff6-a6eee39a5f5d"
+      ],
+      "sourceVersion": 1,
+      "classification": "C2"
+    },
+    "policies/chargeback-policy@3": {
+      "rawUri": "file:///Users/user/IT/fraud_investigation_system/knowledge-raw/cac788c4b2b17ed0c7647820ffe76821d076fcf88662b08a3512e4925cad8a6d.md",
+      "docType": "policy",
+      "checksum": "cac788c4b2b17ed0c7647820ffe76821d076fcf88662b08a3512e4925cad8a6d",
+      "chunkIds": [
+        "37ec95a9-2a66-3f0e-8c2c-0b5996a4af62",
+        "970cc0ae-f452-375c-88b8-2f67627f84b7",
+        "fc086dbd-c58c-330d-a961-1beab99f1bf7",
+        "43b3dac5-358d-3f23-b1a7-cf7b4896d137",
+        "526f59f4-1ee0-3df3-9978-4281bacb3b8b",
+        "9d5a449f-ac31-3778-a0a9-842739340146"
+      ],
+      "sourceVersion": 3,
+      "classification": "C0"
+    },
+    "regulatory/cbn-aml-cft-2023@1": {
+      "rawUri": "file:///Users/user/IT/fraud_investigation_system/knowledge-raw/4269a199039c273615e86d672fa809ca005ddb044f893d21ff7e6a942f761fd5.md",
+      "docType": "regulatory",
+      "checksum": "4269a199039c273615e86d672fa809ca005ddb044f893d21ff7e6a942f761fd5",
+      "chunkIds": [
+        "ca3a5e61-a21f-38cb-9f37-4072f17c66c1",
+        "a0a3041b-9f8d-3b13-bffd-73123647acef",
+        "523687c5-4e21-3b90-a268-117393c32758"
+      ],
+      "sourceVersion": 1,
+      "classification": "C0"
+    },
+    "policies/account-freeze-policy@1": {
+      "rawUri": "file:///Users/user/IT/fraud_investigation_system/knowledge-raw/5373c1dca4444c93150a3c558d49d1a46e1ca99ed9f3d93601a8666ce6012d2d.md",
+      "docType": "policy",
+      "checksum": "5373c1dca4444c93150a3c558d49d1a46e1ca99ed9f3d93601a8666ce6012d2d",
+      "chunkIds": [
+        "94a59582-a6cb-340c-88a5-612a78380fa0",
+        "e1cccc1c-3a4e-3489-bf00-ea32cca89115",
+        "de5f87f1-6240-3369-9eec-e02a0f6acf63",
+        "4c504e22-2d0d-3c0d-ad95-fb8f17b4a538"
+      ],
+      "sourceVersion": 1,
+      "classification": "C0"
+    },
+    "regulatory/fatf-recommendation-20@1": {
+      "rawUri": "file:///Users/user/IT/fraud_investigation_system/knowledge-raw/cae0b2e009d75679ae682f85d5754d4cada26be6d6669b0aa6becab0d8590b04.md",
+      "docType": "regulatory",
+      "checksum": "cae0b2e009d75679ae682f85d5754d4cada26be6d6669b0aa6becab0d8590b04",
+      "chunkIds": [
+        "0e7a445f-26a1-3ff7-ac10-e394898a45f6",
+        "1992b56d-3a1d-3000-8128-bef15dd65e7a",
+        "f08287f4-0305-3412-87d2-0d4b200ce0c3"
+      ],
+      "sourceVersion": 1,
+      "classification": "C0"
+    }
+  },
+  "chunksSkippedDuplicate": 0
+}

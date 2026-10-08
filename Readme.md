@@ -320,3 +320,24 @@ The verification result is recorded in the log. An artifact with no verification
 | **SAR / STR**                | Suspicious Activity Report / Suspicious Transaction Report — regulatory filings triggered by certain investigations.             |
 | **SLO**                      | Service-Level Objective — a target for a measurable service indicator, with an error budget.                                     |
 | **Version envelope**         | The set of model, prompt, retrieval, corpus, and config versions attached to every AI decision record.                            |
+
+kyc dodument reader
+
+meta data enricher transformer
+
+structure aware chunker
+
+Deduplication transformer
+
+IngestionRun Report
+
+Ingestion processor 
+
+`IngestionWriter `
+
+Skip Listener 
+
+
+corpus 
+
+application.yml

@@ -1,0 +1,71 @@
+{
+  "verified_on": "2026-10-07",
+  "command": "mvn -q verify",
+  "java_runtime": "Temurin 25.0.4.1",
+  "java_target": 21,
+  "spring_boot": "3.5.7",
+  "spring_ai": "1.0.9",
+  "database_image": "pgvector/pgvector:pg16",
+  "embedding_provider": "local deterministic fixture",
+  "tests": 21,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "suites": [
+    {
+      "name": "com.fraudengine.architecture.BoundaryRulesTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.fraudengine.architecture.ProbabilisticLayerRulesTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.fraudengine.architecture.WriteGateRulesTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.fraudengine.ingestion.IngestionJobIntegrationTest",
+      "tests": "12",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.fraudengine.knowledge.ChunkingStrategyTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.fraudengine.knowledge.DeduplicationServiceTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.fraudengine.knowledge.IngestionReportTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    }
+  ],
+  "compose_config": "docker compose config --quiet passed",
+  "limits": [
+    "No paid-provider calls made",
+    "No existing user database modified",
+    "No production security or retrieval-quality claims"
+  ]
+}
