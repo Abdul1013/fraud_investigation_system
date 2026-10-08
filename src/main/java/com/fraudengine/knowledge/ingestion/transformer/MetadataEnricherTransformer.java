@@ -1,56 +1,27 @@
-/**
-
- * FILE:        src/main/java/com/fraudengine/knowledge/ingestion/transformer/MetadataEnricherTransformer.java
- * CONTEXT:     knowledge
- * LAYER:       infrastructure
- * PURPOSE:     Reserves batch transformation for document provenance metadata.
- * OWNER:       Knowledge & Evidence
- * SINCE:       week-2
- * RELATED:     ADR-005
- * NOTES:
- *   - TODO (week-2): populate required source-version metadata.
- *   - Transformation behavior is intentionally omitted.
-
- */
 package com.fraudengine.knowledge.ingestion.transformer;
 
 import org.springframework.ai.document.Document;
 import org.springframework.ai.document.DocumentTransformer;
+import com.fraudengine.knowledge.domain.DocType;
+import java.util.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-/** ensures every chunck carries the 
- * full provennace envelope required by ADR-005 */
-
-public class MetadataEnricherTransformer  implements  DocumentTransformer{
-    @Override 
-    public List <Document> apply(Liist<Document> documents) {
-        return documents.stream()
-        .map(this::enrich)
-        .collect(Collectors.toList());
-    }
-
-    private Document enrich(Document doc){
-    var meta = doc.getMetadata();
-
-    requireKey(meta, "source_id");
-    requireKey(meta, "source_version");
-    requireKey(meta, "doc_type");
-    requireKey(meta, "classification");
-    requireKey(meta, "content-hash");
-
-    meta.put("ingested_at", java.time.Instant.now().toString());
-    meta.put("pipeline_version", "week 2");
-
-    return new Document(doc.getId(), doc.getText(), meta);
-}
-
-private void requireKey(Map<String, Object> meta, String key){
-    if( !meta.containsKey(key) || meta.get(key) == null ){
-        throw new IllegalArgumentException("Document missing required metadata: " + key + "- cannot proceed with ingestion");
+/** Validates provenance before any embedding-capable stage. */
+public class MetadataEnricherTransformer implements DocumentTransformer {
+    @Override
+    public List<Document> apply(List<Document> documents) {
+        return documents.stream().map(doc -> {
+            var meta = new HashMap<>(doc.getMetadata());
+            for (String key : List.of("source_id", "source_version", "doc_type", "classification", "content_hash",
+                    "source_path"))
+                if (meta.get(key) == null || meta.get(key).toString().isBlank())
+                    throw new IllegalArgumentException("Missing metadata: " + key);
+            DocType.fromWire(meta.get("doc_type").toString());
+            if (!Set.of("C0", "C1", "C2", "C3").contains(meta.get("classification")))
+                throw new IllegalArgumentException("Invalid classification");
+            if (!(meta.get("source_version") instanceof Number version) || version.intValue() < 1)
+                throw new IllegalArgumentException("Invalid source version");
+            meta.put("pipeline_version", "week-26-v1");
+            return new Document(doc.getId(), doc.getText(), meta);
+        }).toList();
     }
 }
-}
-
