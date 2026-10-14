@@ -29,7 +29,7 @@ public class RetrievalService {
             @Value("${knowledge.retrieval.classification-ceiling:C2}") String ceiling,
             @Value("${knowledge.retrieval.minimum-similarity:0.15}") double minimum) {
         if (!List.of("C0", "C1", "C2").contains(ceiling))
-            throw new IllegalArgumentException("Retrieval ceiling must be C0..C2");
+            throw new IllegalArgumentException("Retrieval ceiling must be C0 to C2");
         if (!Double.isFinite(minimum) || minimum < 0 || minimum > 1)
             throw new IllegalArgumentException("Invalid similarity threshold");
         this.repository = repository;
