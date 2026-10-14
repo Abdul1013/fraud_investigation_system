@@ -1,0 +1,536 @@
+{
+  "datasetSha256" : "5b0c70ce62148966d371c5e2de000c5e10f85ba62e09ff2ef0ace37f3548bf95",
+  "corpusVersion" : 3,
+  "topK" : 5,
+  "embeddingSpace" : "ollama:embeddinggemma@85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1",
+  "fixtureEmbeddings" : false,
+  "retrievalConfigVersion" : "week27-v1:min=0.15:candidates=20:rrf=60",
+  "answerModelVersion" : "deterministic-extractive-v1",
+  "promptVersion" : "exact-quotes-v1",
+  "generatedAt" : "2026-10-13T18:55:13.733242Z",
+  "strategies" : [ {
+    "strategy" : "VECTOR",
+    "recallAtK" : 1.0,
+    "precisionAtK" : 0.23333333333333336,
+    "mrr" : 0.9583333333333334,
+    "answerRelevance" : 0.9166666666666666,
+    "quoteSupportRate" : 1.0,
+    "unknownAbstentionRate" : 1.0,
+    "meanLatencyMillis" : 40.863083357142855,
+    "questions" : [ {
+      "id" : "evidence",
+      "query" : "What evidence is required for a chargeback?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/chargeback-policy",
+        "sourceVersion" : 3,
+        "contains" : "## 3. Evidence Requirements"
+      } ],
+      "retrieved" : [ "policies/chargeback-policy@3#43b3dac5-358d-3f23-b1a7-cf7b4896d137", "policies/chargeback-policy@3#fc086dbd-c58c-330d-a961-1beab99f1bf7", "policies/refund-policy@1#78ef47f8-ae89-3839-8d26-71d305eeadbd", "policies/chargeback-policy@3#37ec95a9-2a66-3f0e-8c2c-0b5996a4af62", "policies/chargeback-policy@3#526f59f4-1ee0-3df3-9978-4281bacb3b8b" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 3,
+      "supportedQuotes" : 3,
+      "latencyMillis" : 39.482875
+    }, {
+      "id" : "deadline",
+      "query" : "What is the chargeback resolution deadline?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/chargeback-policy",
+        "sourceVersion" : 3,
+        "contains" : "## 4. Resolution Timeline"
+      } ],
+      "retrieved" : [ "policies/chargeback-policy@3#526f59f4-1ee0-3df3-9978-4281bacb3b8b", "policies/chargeback-policy@3#37ec95a9-2a66-3f0e-8c2c-0b5996a4af62", "policies/chargeback-policy@3#fc086dbd-c58c-330d-a961-1beab99f1bf7", "policies/chargeback-policy@3#43b3dac5-358d-3f23-b1a7-cf7b4896d137", "policies/chargeback-policy@3#9d5a449f-ac31-3778-a0a9-842739340146" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 3,
+      "supportedQuotes" : 3,
+      "latencyMillis" : 53.024583
+    }, {
+      "id" : "escalation",
+      "query" : "At what transaction value should a chargeback be escalated?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/chargeback-policy",
+        "sourceVersion" : 3,
+        "contains" : "## 5. Escalation Criteria"
+      } ],
+      "retrieved" : [ "policies/chargeback-policy@3#9d5a449f-ac31-3778-a0a9-842739340146", "policies/chargeback-policy@3#fc086dbd-c58c-330d-a961-1beab99f1bf7", "policies/chargeback-policy@3#526f59f4-1ee0-3df3-9978-4281bacb3b8b", "policies/aml-policy@2#b8e0ec4c-8a67-37b8-ab84-facded6e742f", "policies/chargeback-policy@3#37ec95a9-2a66-3f0e-8c2c-0b5996a4af62" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 3,
+      "supportedQuotes" : 3,
+      "latencyMillis" : 41.260625
+    }, {
+      "id" : "unauthorized",
+      "query" : "Can a chargeback be filed for an unauthorized transaction?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/chargeback-policy",
+        "sourceVersion" : 3,
+        "contains" : "## 2. Chargeback Eligibility"
+      } ],
+      "retrieved" : [ "policies/chargeback-policy@3#fc086dbd-c58c-330d-a961-1beab99f1bf7", "prior-cases/case-2024-001@1#0f5ef278-cc9f-3904-9203-8b6fd0699026", "policies/chargeback-policy@3#37ec95a9-2a66-3f0e-8c2c-0b5996a4af62", "policies/chargeback-policy@3#9d5a449f-ac31-3778-a0a9-842739340146", "policies/refund-policy@1#78ef47f8-ae89-3839-8d26-71d305eeadbd" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 3,
+      "supportedQuotes" : 3,
+      "latencyMillis" : 37.276458
+    }, {
+      "id" : "day30",
+      "query" : "What happens if chargeback evidence is incomplete at day 30?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/chargeback-policy",
+        "sourceVersion" : 3,
+        "contains" : "## 4. Resolution Timeline"
+      } ],
+      "retrieved" : [ "policies/chargeback-policy@3#526f59f4-1ee0-3df3-9978-4281bacb3b8b", "policies/chargeback-policy@3#43b3dac5-358d-3f23-b1a7-cf7b4896d137", "policies/chargeback-policy@3#fc086dbd-c58c-330d-a961-1beab99f1bf7", "policies/chargeback-policy@3#37ec95a9-2a66-3f0e-8c2c-0b5996a4af62", "prior-cases/case-2024-001@1#0f5ef278-cc9f-3904-9203-8b6fd0699026" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 3,
+      "supportedQuotes" : 3,
+      "latencyMillis" : 42.815125
+    }, {
+      "id" : "freeze",
+      "query" : "Who must approve a simulated account freeze?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/account-freeze-policy",
+        "sourceVersion" : 1,
+        "contains" : "## Approval"
+      } ],
+      "retrieved" : [ "policies/account-freeze-policy@1#de5f87f1-6240-3369-9eec-e02a0f6acf63", "policies/refund-policy@1#1f6874e4-3c02-3530-b234-3dee0ebf2c49", "policies/account-freeze-policy@1#e1cccc1c-3a4e-3489-bf00-ea32cca89115", "prior-cases/case-2024-003@1#34da2f5f-05f4-3bfc-b7e5-6334c330236a", "prior-cases/case-2024-002@1#7e87fdee-6f56-3ef5-b6a1-10d4cd66d469" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 3,
+      "supportedQuotes" : 3,
+      "latencyMillis" : 49.62725
+    }, {
+      "id" : "freeze-ai",
+      "query" : "Can an AI recommendation alone authorize an account freeze?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/account-freeze-policy",
+        "sourceVersion" : 1,
+        "contains" : "## Approval"
+      } ],
+      "retrieved" : [ "policies/account-freeze-policy@1#de5f87f1-6240-3369-9eec-e02a0f6acf63", "policies/account-freeze-policy@1#e1cccc1c-3a4e-3489-bf00-ea32cca89115", "prior-cases/case-2024-003@1#34da2f5f-05f4-3bfc-b7e5-6334c330236a", "prior-cases/case-2024-002@1#7e87fdee-6f56-3ef5-b6a1-10d4cd66d469", "prior-cases/case-2024-004@1#fb2f7ca3-f5d5-3345-9488-b01e0e7cb7e2" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 3,
+      "supportedQuotes" : 3,
+      "latencyMillis" : 32.735084
+    }, {
+      "id" : "refund",
+      "query" : "What must be verified before recommending a refund?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/refund-policy",
+        "sourceVersion" : 1,
+        "contains" : "## Eligibility"
+      } ],
+      "retrieved" : [ "policies/refund-policy@1#78ef47f8-ae89-3839-8d26-71d305eeadbd", "policies/refund-policy@1#1f6874e4-3c02-3530-b234-3dee0ebf2c49", "policies/refund-policy@1#c125813e-500a-3bdd-801c-f54efbcf533d", "policies/account-freeze-policy@1#e1cccc1c-3a4e-3489-bf00-ea32cca89115", "regulatory/cbn-aml-cft-2023@1#a0a3041b-9f8d-3b13-bffd-73123647acef" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 2,
+      "supportedQuotes" : 2,
+      "latencyMillis" : 35.896
+    }, {
+      "id" : "refund-key",
+      "query" : "What authorization and idempotency controls does a simulated refund require?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/refund-policy",
+        "sourceVersion" : 1,
+        "contains" : "## Authorization"
+      } ],
+      "retrieved" : [ "policies/refund-policy@1#1f6874e4-3c02-3530-b234-3dee0ebf2c49", "policies/refund-policy@1#c125813e-500a-3bdd-801c-f54efbcf533d", "policies/account-freeze-policy@1#de5f87f1-6240-3369-9eec-e02a0f6acf63", "policies/refund-policy@1#78ef47f8-ae89-3839-8d26-71d305eeadbd", "policies/chargeback-policy@3#fc086dbd-c58c-330d-a961-1beab99f1bf7" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 3,
+      "supportedQuotes" : 3,
+      "latencyMillis" : 46.145
+    }, {
+      "id" : "aml",
+      "query" : "Who receives suspicious activity escalations?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/aml-policy",
+        "sourceVersion" : 2,
+        "contains" : "## Escalation"
+      } ],
+      "retrieved" : [ "policies/aml-policy@2#b8e0ec4c-8a67-37b8-ab84-facded6e742f", "policies/account-freeze-policy@1#e1cccc1c-3a4e-3489-bf00-ea32cca89115", "prior-cases/case-2024-002@1#80ca065b-8bc2-30bd-8ca4-020bbc446c93", "prior-cases/case-2024-003@1#d6b17993-59fd-3c44-983e-3e5ecc81da07", "prior-cases/case-2024-004@1#f017e446-dcd9-3b49-bdf8-be0261118741" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 2,
+      "supportedQuotes" : 2,
+      "latencyMillis" : 43.887958
+    }, {
+      "id" : "gaps",
+      "query" : "Should missing evidence be filled with assumptions?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "prior-cases/case-2024-002",
+        "sourceVersion" : 1,
+        "contains" : "## Lessons"
+      }, {
+        "sourceId" : "prior-cases/case-2024-003",
+        "sourceVersion" : 1,
+        "contains" : "## Lessons"
+      }, {
+        "sourceId" : "prior-cases/case-2024-004",
+        "sourceVersion" : 1,
+        "contains" : "## Lessons"
+      } ],
+      "retrieved" : [ "prior-cases/case-2024-002@1#3d103e86-9bfb-38d9-9e4a-c57df89181ee", "prior-cases/case-2024-003@1#6251989c-ff7a-35e9-8fce-76bb0d5f6aef", "prior-cases/case-2024-004@1#e62360fb-95ad-3a24-bff6-a6eee39a5f5d", "regulatory/fatf-recommendation-20@1#f08287f4-0305-3412-87d2-0d4b200ce0c3", "regulatory/cbn-aml-cft-2023@1#523687c5-4e21-3b90-a268-117393c32758" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.6,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 3,
+      "supportedQuotes" : 3,
+      "latencyMillis" : 41.533375
+    }, {
+      "id" : "paraphrase",
+      "query" : "Which paperwork proves that the goods reached the buyer?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/chargeback-policy",
+        "sourceVersion" : 3,
+        "contains" : "## 3. Evidence Requirements"
+      } ],
+      "retrieved" : [ "policies/aml-policy@2#f11b7f0c-b81c-3e96-800d-3c862bf467d1", "policies/chargeback-policy@3#43b3dac5-358d-3f23-b1a7-cf7b4896d137", "policies/refund-policy@1#78ef47f8-ae89-3839-8d26-71d305eeadbd", "policies/chargeback-policy@3#526f59f4-1ee0-3df3-9978-4281bacb3b8b", "regulatory/fatf-recommendation-20@1#f08287f4-0305-3412-87d2-0d4b200ce0c3" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 0.5,
+      "answerRelevant" : false,
+      "answerStatus" : "INSUFFICIENT_EVIDENCE",
+      "quoteCount" : 0,
+      "supportedQuotes" : 0,
+      "latencyMillis" : 43.58675
+    }, {
+      "id" : "unknown-weather",
+      "query" : "What is the weather on Mars tomorrow?",
+      "unknown" : true,
+      "expected" : [ ],
+      "retrieved" : [ "prior-cases/case-2024-002@1#3d103e86-9bfb-38d9-9e4a-c57df89181ee", "prior-cases/case-2024-003@1#6251989c-ff7a-35e9-8fce-76bb0d5f6aef", "prior-cases/case-2024-004@1#e62360fb-95ad-3a24-bff6-a6eee39a5f5d", "policies/aml-policy@2#f11b7f0c-b81c-3e96-800d-3c862bf467d1", "prior-cases/case-2024-003@1#34da2f5f-05f4-3bfc-b7e5-6334c330236a" ],
+      "recallAtK" : 0.0,
+      "precisionAtK" : 0.0,
+      "reciprocalRank" : 0.0,
+      "answerRelevant" : false,
+      "answerStatus" : "INSUFFICIENT_EVIDENCE",
+      "quoteCount" : 0,
+      "supportedQuotes" : 0,
+      "latencyMillis" : 35.359334
+    }, {
+      "id" : "unknown-astronomy",
+      "query" : "How many moons orbit Neptune?",
+      "unknown" : true,
+      "expected" : [ ],
+      "retrieved" : [ "policies/aml-policy@2#f11b7f0c-b81c-3e96-800d-3c862bf467d1", "prior-cases/case-2024-002@1#3d103e86-9bfb-38d9-9e4a-c57df89181ee", "prior-cases/case-2024-003@1#6251989c-ff7a-35e9-8fce-76bb0d5f6aef", "prior-cases/case-2024-004@1#e62360fb-95ad-3a24-bff6-a6eee39a5f5d", "prior-cases/case-2024-003@1#34da2f5f-05f4-3bfc-b7e5-6334c330236a" ],
+      "recallAtK" : 0.0,
+      "precisionAtK" : 0.0,
+      "reciprocalRank" : 0.0,
+      "answerRelevant" : false,
+      "answerStatus" : "INSUFFICIENT_EVIDENCE",
+      "quoteCount" : 0,
+      "supportedQuotes" : 0,
+      "latencyMillis" : 29.45275
+    } ]
+  }, {
+    "strategy" : "HYBRID",
+    "recallAtK" : 1.0,
+    "precisionAtK" : 0.23333333333333336,
+    "mrr" : 0.9444444444444445,
+    "answerRelevance" : 0.9166666666666666,
+    "quoteSupportRate" : 1.0,
+    "unknownAbstentionRate" : 1.0,
+    "meanLatencyMillis" : 37.39450307142857,
+    "questions" : [ {
+      "id" : "evidence",
+      "query" : "What evidence is required for a chargeback?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/chargeback-policy",
+        "sourceVersion" : 3,
+        "contains" : "## 3. Evidence Requirements"
+      } ],
+      "retrieved" : [ "policies/chargeback-policy@3#43b3dac5-358d-3f23-b1a7-cf7b4896d137", "policies/chargeback-policy@3#fc086dbd-c58c-330d-a961-1beab99f1bf7", "policies/chargeback-policy@3#526f59f4-1ee0-3df3-9978-4281bacb3b8b", "policies/account-freeze-policy@1#e1cccc1c-3a4e-3489-bf00-ea32cca89115", "policies/chargeback-policy@3#37ec95a9-2a66-3f0e-8c2c-0b5996a4af62" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 3,
+      "supportedQuotes" : 3,
+      "latencyMillis" : 47.166958
+    }, {
+      "id" : "deadline",
+      "query" : "What is the chargeback resolution deadline?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/chargeback-policy",
+        "sourceVersion" : 3,
+        "contains" : "## 4. Resolution Timeline"
+      } ],
+      "retrieved" : [ "policies/chargeback-policy@3#526f59f4-1ee0-3df3-9978-4281bacb3b8b", "policies/chargeback-policy@3#fc086dbd-c58c-330d-a961-1beab99f1bf7", "policies/chargeback-policy@3#37ec95a9-2a66-3f0e-8c2c-0b5996a4af62", "policies/chargeback-policy@3#43b3dac5-358d-3f23-b1a7-cf7b4896d137", "policies/chargeback-policy@3#9d5a449f-ac31-3778-a0a9-842739340146" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 3,
+      "supportedQuotes" : 3,
+      "latencyMillis" : 36.075542
+    }, {
+      "id" : "escalation",
+      "query" : "At what transaction value should a chargeback be escalated?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/chargeback-policy",
+        "sourceVersion" : 3,
+        "contains" : "## 5. Escalation Criteria"
+      } ],
+      "retrieved" : [ "policies/chargeback-policy@3#9d5a449f-ac31-3778-a0a9-842739340146", "policies/chargeback-policy@3#fc086dbd-c58c-330d-a961-1beab99f1bf7", "policies/chargeback-policy@3#526f59f4-1ee0-3df3-9978-4281bacb3b8b", "policies/aml-policy@2#b8e0ec4c-8a67-37b8-ab84-facded6e742f", "prior-cases/case-2024-001@1#0f5ef278-cc9f-3904-9203-8b6fd0699026" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 3,
+      "supportedQuotes" : 3,
+      "latencyMillis" : 36.181958
+    }, {
+      "id" : "unauthorized",
+      "query" : "Can a chargeback be filed for an unauthorized transaction?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/chargeback-policy",
+        "sourceVersion" : 3,
+        "contains" : "## 2. Chargeback Eligibility"
+      } ],
+      "retrieved" : [ "policies/chargeback-policy@3#fc086dbd-c58c-330d-a961-1beab99f1bf7", "prior-cases/case-2024-001@1#0f5ef278-cc9f-3904-9203-8b6fd0699026", "prior-cases/case-2024-001@1#82f934c7-54bf-3263-8f45-8049533d7ac0", "policies/chargeback-policy@3#37ec95a9-2a66-3f0e-8c2c-0b5996a4af62", "policies/chargeback-policy@3#9d5a449f-ac31-3778-a0a9-842739340146" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 3,
+      "supportedQuotes" : 3,
+      "latencyMillis" : 40.067
+    }, {
+      "id" : "day30",
+      "query" : "What happens if chargeback evidence is incomplete at day 30?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/chargeback-policy",
+        "sourceVersion" : 3,
+        "contains" : "## 4. Resolution Timeline"
+      } ],
+      "retrieved" : [ "policies/chargeback-policy@3#526f59f4-1ee0-3df3-9978-4281bacb3b8b", "policies/chargeback-policy@3#43b3dac5-358d-3f23-b1a7-cf7b4896d137", "policies/chargeback-policy@3#fc086dbd-c58c-330d-a961-1beab99f1bf7", "policies/chargeback-policy@3#9d5a449f-ac31-3778-a0a9-842739340146", "policies/chargeback-policy@3#37ec95a9-2a66-3f0e-8c2c-0b5996a4af62" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 3,
+      "supportedQuotes" : 3,
+      "latencyMillis" : 44.201334
+    }, {
+      "id" : "freeze",
+      "query" : "Who must approve a simulated account freeze?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/account-freeze-policy",
+        "sourceVersion" : 1,
+        "contains" : "## Approval"
+      } ],
+      "retrieved" : [ "policies/account-freeze-policy@1#de5f87f1-6240-3369-9eec-e02a0f6acf63", "policies/refund-policy@1#1f6874e4-3c02-3530-b234-3dee0ebf2c49", "policies/account-freeze-policy@1#e1cccc1c-3a4e-3489-bf00-ea32cca89115", "policies/account-freeze-policy@1#94a59582-a6cb-340c-88a5-612a78380fa0", "prior-cases/case-2024-002@1#80ca065b-8bc2-30bd-8ca4-020bbc446c93" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 3,
+      "supportedQuotes" : 3,
+      "latencyMillis" : 35.301375
+    }, {
+      "id" : "freeze-ai",
+      "query" : "Can an AI recommendation alone authorize an account freeze?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/account-freeze-policy",
+        "sourceVersion" : 1,
+        "contains" : "## Approval"
+      } ],
+      "retrieved" : [ "policies/account-freeze-policy@1#de5f87f1-6240-3369-9eec-e02a0f6acf63", "prior-cases/case-2024-003@1#34da2f5f-05f4-3bfc-b7e5-6334c330236a", "policies/account-freeze-policy@1#e1cccc1c-3a4e-3489-bf00-ea32cca89115", "prior-cases/case-2024-002@1#7e87fdee-6f56-3ef5-b6a1-10d4cd66d469", "prior-cases/case-2024-004@1#fb2f7ca3-f5d5-3345-9488-b01e0e7cb7e2" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 3,
+      "supportedQuotes" : 3,
+      "latencyMillis" : 35.644708
+    }, {
+      "id" : "refund",
+      "query" : "What must be verified before recommending a refund?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/refund-policy",
+        "sourceVersion" : 1,
+        "contains" : "## Eligibility"
+      } ],
+      "retrieved" : [ "policies/refund-policy@1#78ef47f8-ae89-3839-8d26-71d305eeadbd", "regulatory/cbn-aml-cft-2023@1#a0a3041b-9f8d-3b13-bffd-73123647acef", "policies/refund-policy@1#1f6874e4-3c02-3530-b234-3dee0ebf2c49", "policies/account-freeze-policy@1#e1cccc1c-3a4e-3489-bf00-ea32cca89115", "policies/refund-policy@1#c125813e-500a-3bdd-801c-f54efbcf533d" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 2,
+      "supportedQuotes" : 2,
+      "latencyMillis" : 41.176459
+    }, {
+      "id" : "refund-key",
+      "query" : "What authorization and idempotency controls does a simulated refund require?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/refund-policy",
+        "sourceVersion" : 1,
+        "contains" : "## Authorization"
+      } ],
+      "retrieved" : [ "policies/refund-policy@1#1f6874e4-3c02-3530-b234-3dee0ebf2c49", "policies/account-freeze-policy@1#de5f87f1-6240-3369-9eec-e02a0f6acf63", "policies/refund-policy@1#78ef47f8-ae89-3839-8d26-71d305eeadbd", "prior-cases/case-2024-004@1#5f1daaca-90a0-3306-bee0-7670c174c23e", "policies/refund-policy@1#c125813e-500a-3bdd-801c-f54efbcf533d" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 3,
+      "supportedQuotes" : 3,
+      "latencyMillis" : 38.584708
+    }, {
+      "id" : "aml",
+      "query" : "Who receives suspicious activity escalations?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/aml-policy",
+        "sourceVersion" : 2,
+        "contains" : "## Escalation"
+      } ],
+      "retrieved" : [ "policies/aml-policy@2#b8e0ec4c-8a67-37b8-ab84-facded6e742f", "policies/account-freeze-policy@1#e1cccc1c-3a4e-3489-bf00-ea32cca89115", "regulatory/fatf-recommendation-20@1#0e7a445f-26a1-3ff7-ac10-e394898a45f6", "prior-cases/case-2024-002@1#80ca065b-8bc2-30bd-8ca4-020bbc446c93", "policies/chargeback-policy@3#9d5a449f-ac31-3778-a0a9-842739340146" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 2,
+      "supportedQuotes" : 2,
+      "latencyMillis" : 37.281
+    }, {
+      "id" : "gaps",
+      "query" : "Should missing evidence be filled with assumptions?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "prior-cases/case-2024-002",
+        "sourceVersion" : 1,
+        "contains" : "## Lessons"
+      }, {
+        "sourceId" : "prior-cases/case-2024-003",
+        "sourceVersion" : 1,
+        "contains" : "## Lessons"
+      }, {
+        "sourceId" : "prior-cases/case-2024-004",
+        "sourceVersion" : 1,
+        "contains" : "## Lessons"
+      } ],
+      "retrieved" : [ "prior-cases/case-2024-002@1#3d103e86-9bfb-38d9-9e4a-c57df89181ee", "prior-cases/case-2024-003@1#6251989c-ff7a-35e9-8fce-76bb0d5f6aef", "prior-cases/case-2024-004@1#e62360fb-95ad-3a24-bff6-a6eee39a5f5d", "regulatory/cbn-aml-cft-2023@1#523687c5-4e21-3b90-a268-117393c32758", "prior-cases/case-2024-003@1#34da2f5f-05f4-3bfc-b7e5-6334c330236a" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.6,
+      "reciprocalRank" : 1.0,
+      "answerRelevant" : true,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 3,
+      "supportedQuotes" : 3,
+      "latencyMillis" : 39.739584
+    }, {
+      "id" : "paraphrase",
+      "query" : "Which paperwork proves that the goods reached the buyer?",
+      "unknown" : false,
+      "expected" : [ {
+        "sourceId" : "policies/chargeback-policy",
+        "sourceVersion" : 3,
+        "contains" : "## 3. Evidence Requirements"
+      } ],
+      "retrieved" : [ "policies/chargeback-policy@3#fc086dbd-c58c-330d-a961-1beab99f1bf7", "policies/aml-policy@2#f11b7f0c-b81c-3e96-800d-3c862bf467d1", "policies/chargeback-policy@3#43b3dac5-358d-3f23-b1a7-cf7b4896d137", "policies/refund-policy@1#78ef47f8-ae89-3839-8d26-71d305eeadbd", "policies/chargeback-policy@3#526f59f4-1ee0-3df3-9978-4281bacb3b8b" ],
+      "recallAtK" : 1.0,
+      "precisionAtK" : 0.2,
+      "reciprocalRank" : 0.3333333333333333,
+      "answerRelevant" : false,
+      "answerStatus" : "ANSWERED",
+      "quoteCount" : 1,
+      "supportedQuotes" : 1,
+      "latencyMillis" : 32.833333
+    }, {
+      "id" : "unknown-weather",
+      "query" : "What is the weather on Mars tomorrow?",
+      "unknown" : true,
+      "expected" : [ ],
+      "retrieved" : [ "prior-cases/case-2024-002@1#3d103e86-9bfb-38d9-9e4a-c57df89181ee", "prior-cases/case-2024-003@1#6251989c-ff7a-35e9-8fce-76bb0d5f6aef", "prior-cases/case-2024-004@1#e62360fb-95ad-3a24-bff6-a6eee39a5f5d", "policies/aml-policy@2#f11b7f0c-b81c-3e96-800d-3c862bf467d1", "prior-cases/case-2024-003@1#34da2f5f-05f4-3bfc-b7e5-6334c330236a" ],
+      "recallAtK" : 0.0,
+      "precisionAtK" : 0.0,
+      "reciprocalRank" : 0.0,
+      "answerRelevant" : false,
+      "answerStatus" : "INSUFFICIENT_EVIDENCE",
+      "quoteCount" : 0,
+      "supportedQuotes" : 0,
+      "latencyMillis" : 32.123917
+    }, {
+      "id" : "unknown-astronomy",
+      "query" : "How many moons orbit Neptune?",
+      "unknown" : true,
+      "expected" : [ ],
+      "retrieved" : [ "policies/aml-policy@2#f11b7f0c-b81c-3e96-800d-3c862bf467d1", "prior-cases/case-2024-002@1#3d103e86-9bfb-38d9-9e4a-c57df89181ee", "prior-cases/case-2024-003@1#6251989c-ff7a-35e9-8fce-76bb0d5f6aef", "prior-cases/case-2024-004@1#e62360fb-95ad-3a24-bff6-a6eee39a5f5d", "prior-cases/case-2024-003@1#34da2f5f-05f4-3bfc-b7e5-6334c330236a" ],
+      "recallAtK" : 0.0,
+      "precisionAtK" : 0.0,
+      "reciprocalRank" : 0.0,
+      "answerRelevant" : false,
+      "answerStatus" : "INSUFFICIENT_EVIDENCE",
+      "quoteCount" : 0,
+      "supportedQuotes" : 0,
+      "latencyMillis" : 27.145167
+    } ]
+  } ]
+}

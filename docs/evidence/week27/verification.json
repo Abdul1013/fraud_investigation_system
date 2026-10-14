@@ -1,0 +1,106 @@
+{
+  "verifiedOn": "2026-10-13",
+  "command": "mvn -q verify",
+  "javaRuntime": "Temurin 25.0.4.1",
+  "javaTarget": 21,
+  "postgresImage": "pgvector/pgvector:pg16",
+  "tests": 43,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "suites": [
+    {
+      "name": "com.fraudengine.architecture.BoundaryRulesTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.fraudengine.architecture.ProbabilisticLayerRulesTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.fraudengine.architecture.WriteGateRulesTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.fraudengine.ingestion.IngestionJobIntegrationTest",
+      "tests": "12",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.fraudengine.knowledge.ChunkingStrategyTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.fraudengine.knowledge.DeduplicationServiceTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.fraudengine.knowledge.IngestionReportTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.fraudengine.platform.gateway.OllamaAdaptersTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.fraudengine.retrieval.AnswerServiceTest",
+      "tests": "7",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.fraudengine.retrieval.JobLaunchRetryTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.fraudengine.retrieval.RankFusionTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.fraudengine.retrieval.RetrievalIntegrationTest",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    }
+  ],
+  "realModel": "EmbeddingGemma through Ollama 0.40.3",
+  "modelStorage": ".runtime/models (ignored)",
+  "semanticReport": "semantic/retrieval-comparison.json",
+  "limits": [
+    "Optional Ollama chat selector verified with local wire-contract tests, not a downloaded chat model.",
+    "Real semantic comparison uses deterministic extractive answers.",
+    "Small learning dataset; no production quality or latency claim.",
+    "No existing user database reset; verification database is separate."
+  ]
+}
