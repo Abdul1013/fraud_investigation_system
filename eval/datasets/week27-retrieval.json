@@ -1,0 +1,175 @@
+{
+  "_guide": {
+    "how": "Run the same questions and relevance labels against VECTOR and HYBRID at one published corpus version.",
+    "why": "Source revision plus expected section prevents a wrong passage from counting as a correct citation.",
+    "limits": "Small synthetic-domain learning dataset; not a production fraud benchmark. Unknown questions test abstention."
+  },
+  "questions": [
+    {
+      "id": "evidence",
+      "query": "What evidence is required for a chargeback?",
+      "unknown": false,
+      "relevant": [
+        {
+          "sourceId": "policies/chargeback-policy",
+          "sourceVersion": 3,
+          "contains": "## 3. Evidence Requirements"
+        }
+      ]
+    },
+    {
+      "id": "deadline",
+      "query": "What is the chargeback resolution deadline?",
+      "unknown": false,
+      "relevant": [
+        {
+          "sourceId": "policies/chargeback-policy",
+          "sourceVersion": 3,
+          "contains": "## 4. Resolution Timeline"
+        }
+      ]
+    },
+    {
+      "id": "escalation",
+      "query": "At what transaction value should a chargeback be escalated?",
+      "unknown": false,
+      "relevant": [
+        {
+          "sourceId": "policies/chargeback-policy",
+          "sourceVersion": 3,
+          "contains": "## 5. Escalation Criteria"
+        }
+      ]
+    },
+    {
+      "id": "unauthorized",
+      "query": "Can a chargeback be filed for an unauthorized transaction?",
+      "unknown": false,
+      "relevant": [
+        {
+          "sourceId": "policies/chargeback-policy",
+          "sourceVersion": 3,
+          "contains": "## 2. Chargeback Eligibility"
+        }
+      ]
+    },
+    {
+      "id": "day30",
+      "query": "What happens if chargeback evidence is incomplete at day 30?",
+      "unknown": false,
+      "relevant": [
+        {
+          "sourceId": "policies/chargeback-policy",
+          "sourceVersion": 3,
+          "contains": "## 4. Resolution Timeline"
+        }
+      ]
+    },
+    {
+      "id": "freeze",
+      "query": "Who must approve a simulated account freeze?",
+      "unknown": false,
+      "relevant": [
+        {
+          "sourceId": "policies/account-freeze-policy",
+          "sourceVersion": 1,
+          "contains": "## Approval"
+        }
+      ]
+    },
+    {
+      "id": "freeze-ai",
+      "query": "Can an AI recommendation alone authorize an account freeze?",
+      "unknown": false,
+      "relevant": [
+        {
+          "sourceId": "policies/account-freeze-policy",
+          "sourceVersion": 1,
+          "contains": "## Approval"
+        }
+      ]
+    },
+    {
+      "id": "refund",
+      "query": "What must be verified before recommending a refund?",
+      "unknown": false,
+      "relevant": [
+        {
+          "sourceId": "policies/refund-policy",
+          "sourceVersion": 1,
+          "contains": "## Eligibility"
+        }
+      ]
+    },
+    {
+      "id": "refund-key",
+      "query": "What authorization and idempotency controls does a simulated refund require?",
+      "unknown": false,
+      "relevant": [
+        {
+          "sourceId": "policies/refund-policy",
+          "sourceVersion": 1,
+          "contains": "## Authorization"
+        }
+      ]
+    },
+    {
+      "id": "aml",
+      "query": "Who receives suspicious activity escalations?",
+      "unknown": false,
+      "relevant": [
+        {
+          "sourceId": "policies/aml-policy",
+          "sourceVersion": 2,
+          "contains": "## Escalation"
+        }
+      ]
+    },
+    {
+      "id": "gaps",
+      "query": "Should missing evidence be filled with assumptions?",
+      "unknown": false,
+      "relevant": [
+        {
+          "sourceId": "prior-cases/case-2024-002",
+          "sourceVersion": 1,
+          "contains": "## Lessons"
+        },
+        {
+          "sourceId": "prior-cases/case-2024-003",
+          "sourceVersion": 1,
+          "contains": "## Lessons"
+        },
+        {
+          "sourceId": "prior-cases/case-2024-004",
+          "sourceVersion": 1,
+          "contains": "## Lessons"
+        }
+      ]
+    },
+    {
+      "id": "paraphrase",
+      "query": "Which paperwork proves that the goods reached the buyer?",
+      "unknown": false,
+      "relevant": [
+        {
+          "sourceId": "policies/chargeback-policy",
+          "sourceVersion": 3,
+          "contains": "## 3. Evidence Requirements"
+        }
+      ]
+    },
+    {
+      "id": "unknown-weather",
+      "query": "What is the weather on Mars tomorrow?",
+      "unknown": true,
+      "relevant": []
+    },
+    {
+      "id": "unknown-astronomy",
+      "query": "How many moons orbit Neptune?",
+      "unknown": true,
+      "relevant": []
+    }
+  ]
+}
