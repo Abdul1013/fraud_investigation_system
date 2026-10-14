@@ -1,0 +1,7 @@
+# WEEK 27: enable local semantic embeddings without altering Week 26 ingestion or requiring a chat model.
+# A separate profile makes the model requirement visible. Combine with local for loopback HTTP binding.
+# Exact quotation answers remain available through the deterministic baseline; opt into local LLM selection
+# with RETRIEVAL_ANSWER_PROVIDER=ollama after installing the configured answer model.
+knowledge:
+  retrieval:
+    embedding-provider: ollama
