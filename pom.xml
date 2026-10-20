@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+============================================================================
+FILE:        pom.xml
+PURPOSE:     Manage the Spring Boot build and version-aligned dependencies.
+OWNER:       Platform & Operations
+SINCE:       week-26
+RELATED:     ADR-001, Week 28 identity boundary
+NOTES:
+  - Security dependencies approved by the user; Boot manages their versions.
+  - Security test helpers are test-scoped and do not ship in the application.
+============================================================================
+-->
 <project 
     xmlns="http://maven.apache.org/POM/4.0.0"
          
@@ -35,6 +47,26 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
+        <!-- User-approved MCP SDK transport; disabled except in the explicit mcp profile. -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-mcp-server</artifactId>
+        </dependency>
+        <!-- User-approved maintained JWT signing/verification for approval tokens. -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-jose</artifactId>
+        </dependency>
+        <!-- Spring Security owns authentication, authorization, and CSRF handling. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!-- spring boot  -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

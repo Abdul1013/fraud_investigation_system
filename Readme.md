@@ -1,11 +1,22 @@
+<!--
+============================================================================
+FILE:        Readme.md
+PURPOSE:     Describe the project, learning deliverables, and current setup.
+OWNER:       Fraud Investigation Engineering
+SINCE:       week-25
+RELATED:     ADR-001 through ADR-005, docs/week28-implementation.md
+NOTES:
+  - Week 28 authentication now applies to the earlier knowledge HTTP routes.
+============================================================================
+-->
 # AI-Native Fraud Investigation & Resolution Engine
 
 Designed a working, AI-native integrated backend architecture that balances product value, maintainability, security, observability, provider flexibility, and operational cost. with product, risk, and operations alignment. using  Spring Boot backend, PostgreSQL database, AI provider access or sandbox, architecture diagram tool, project rubric.Design an AI-native
 
 AI Practice Requirement: Prompt log, AI-output verification notes, and human review evidence.
 
-> **Status:**
-> **Tag:** `w`
+> **Status:** Week 27 retrieval and evaluation implemented; Week 28 case-scoped tools, bounded workflow, signed approval gate, simulator, and local MCP implemented; production MFA integration pending.
+> **Submission tag:** `week-27` pending a complete committed snapshot
 > **Stack:** Java 21 · Spring Boot · Spring AI / LangChain4j · PostgreSQL + pgvector · Temporal (or Spring Batch + RabbitMQ fallback) · Docker Compose
 
 ## Table of Contents
@@ -215,6 +226,8 @@ Planned additions in later weeks: `src/test/` with ArchUnit rules, `eval/` with 
 
 ## 7. Local run
 
+start.spring.IO
+
 The `docker compose up` command below will start the supporting infrastructure (Postgres with pgvector and the model gateway stub).
 
 ```bash
@@ -243,9 +256,54 @@ Environment variables (see `.env.example`):
 | `OTEL_EXPORTER_OTLP_ENDPOINT`           | Trace exporter endpoint            | `http://localhost:4317`                  |
 | `APP_ENV`                               | `local` / `staging` / `prod` | `local`                                  |
 
+## Week 27: retrieval and grounded answers
+
+### Submission checklist
+
+Repository: [Abdul1013/fraud_investigation_system](https://github.com/Abdul1013/fraud_investigation_system).
+
+| Required deliverable     | Location                                                                                                                                                                                                                                                                                                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Modular RAG service      | [Implementation and walkthrough](docs/week27-implementation.md); [retrieval module](src/main/java/com/fraudengine/knowledge/retrieval); [HTTP controller](src/main/java/com/fraudengine/knowledge/infrastructure/RetrievalController.java)                                                                                                                            |
+| Two retrieval strategies | VECTOR cosine search and HYBRID vector/keyword rank fusion in [RetrievalService](src/main/java/com/fraudengine/knowledge/retrieval/RetrievalService.java), [RetrievalRepository](src/main/java/com/fraudengine/knowledge/retrieval/RetrievalRepository.java), and [ReciprocalRankFusion](src/main/java/com/fraudengine/knowledge/retrieval/ReciprocalRankFusion.java) |
+| Evaluation dataset       | [Golden questions and passage labels](eval/datasets/week27-retrieval.json)                                                                                                                                                                                                                                                                                          |
+| Score report             | [Readable comparison](docs/evidence/week27/semantic/retrieval-comparison.md); [question-level JSON](docs/evidence/week27/semantic/retrieval-comparison.json); [test verification](docs/evidence/week27/verification.json)                                                                                                                                             |
+| Failure and tuning notes | [Observed failures, decisions, and next experiment](docs/week27-failure-and-tuning-notes.md)                                                                                                                                                                                                                                                                        |
+| README and AI usage log  | This README and [AI decision/usage log](ai/Ai_Decision_log.md)                                                                                                                                                                                                                                                                                                      |
+| Git tag `week-27`      | Pending: commit the complete deliverables, then create and push the tag. A working-tree file is not included in a Git tag.                                                                                                                                                                                                                                         |
+
+The measured run uses real local semantic embeddings and deterministic quotation-based answers. Optional local chat-model selection is implemented and API-contract tested; live chat-model quality is not claimed. The score report retains the paraphrase failure.
+
+See [Week 27 implementation and decision review](docs/week27-implementation.md) for the code walkthrough, model setup, API examples, evaluation commands, and limitations.
+
+```bash
+ollama pull embeddinggemma
+mvn spring-boot:run -Dspring-boot.run.profiles=local,ollama
+# Configure explicit accounts and obtain the authentication/CSRF headers first:
+# see docs/week28-implementation.md ("Try the local setup").
+# After a completed ingestion, build the index and call answers with those headers.
+```
+
+VECTOR and HYBRID use identical corpus/date/classification scope. Answers contain verified source quotations or explicit abstention. The default quote selector is deterministic; optional local LLM selection uses the same backend validation. Offline fixture embeddings remain labelled and cannot establish semantic quality.
+
+## Week 28: bounded tools, approval gate, and MCP
+
+[Implementation walkthrough and local setup](docs/week28-implementation.md) maps the
+studied resources to each module: persisted case grants, scoped retrieval, strict
+read/proposal tools, native local model function calling, bounded asynchronous runs,
+signed approval tokens, atomic simulator execution with audit, and real stdio MCP.
+
+[Verification and unsafe-action evidence](docs/evidence/week28/verification.md)
+separates deterministic tests, the SDK protocol smoke test, and optional native model
+evidence. Basic credentials do not satisfy MFA: the runtime approval adapter denies
+until verified identity-provider integration is supplied; isolated tests simulate it.
+The simulator changes only synthetic database records. No account is created by default.
+The [implementation plan](docs/week28-implementation-plan.md) and
+[proposed ADR-006](docs/adr/ADR-006-Authenticated-tool-boundaries.md) explain scope and decisions.
+
 ## 8. AI usage and decision log
 
-Prompt log, AI-output verification notes, and human-decision evidence. This repository maintains a single running log at `ai/AI_DECISION_LOG.md`.
+Prompt log, AI-output verification notes, and human-decision evidence. This repository maintains a single running log at `ai/Ai_Decision_log.md`.
 
 Each entry records:
 
@@ -282,7 +340,7 @@ The verification result is recorded in the log. An artifact with no verification
 1. Open an issue describing the problem or decision.
 2. If the change is architectural, draft an ADR in `Proposed` status.
 3. Update the relevant doc under `docs/`.
-4. Add or update an entry in `ai/AI_DECISION_LOG.md` if AI assisted.
+4. Add or update an entry in `ai/Ai_Decision_log.md` if AI assisted.
 5. Open a PR; CI runs build, ArchUnit, and eval gates.
 6. On merge, update the ADR status to `Accepted` and record the date in its status history.
 
@@ -331,13 +389,12 @@ Deduplication transformer
 
 IngestionRun Report
 
-Ingestion processor 
+Ingestion processor
 
 `IngestionWriter `
 
-Skip Listener 
+Skip Listener
 
-
-corpus 
+corpus
 
 application.yml
