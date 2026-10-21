@@ -1,0 +1,33 @@
+{
+  "_file": "docs/evidence/week28/verification.json",
+  "_purpose": "Record deterministic integration, security, and SDK protocol verification separately from live-model evidence",
+  "recordedDate": "2026-10-20",
+  "command": "mvn -q verify",
+  "javaRuntime": "Temurin 25",
+  "javaTarget": 21,
+  "counts": {
+    "tests": 87,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1
+  },
+  "passed": 86,
+  "database": "Isolated PostgreSQL 16 + pgvector Testcontainers",
+  "stepUp": "Explicit test-only simulated verification; runtime Basic adapter denies",
+  "modelTurns": "Scripted fixtures except the separately invoked optional native model test",
+  "mcp": "Real SDK 0.18.3 client launching the application as a child stdio process",
+  "simulatorOnly": true,
+  "userDatabaseReset": false,
+  "nativeModelEvidence": "native-tool-roundtrip.json",
+  "nativeModelVerification": {
+    "command": "mvn -q -Dtest=Week28RuntimeIntegrationTest#realLocalModelRequestsAReadToolAndReceivesItsResult -Dweek28.live=true -Dsurefire.reportNameSuffix=live test",
+    "counts": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "modelVersion": "ollama:qwen2.5:1.5b@65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b",
+    "scope": "One native read-tool call and result/follow-up using a synthetic case; zero account effects"
+  }
+}

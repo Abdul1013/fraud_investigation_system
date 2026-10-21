@@ -1,0 +1,33 @@
+{
+  "_file" : "docs/evidence/week28/native-tool-roundtrip.json",
+  "_purpose" : "Real local native tool call, authorized backend result, and follow-up model turn",
+  "recordedAt" : "2026-10-20T21:36:08.404316Z",
+  "modelVersion" : "ollama:qwen2.5:1.5b@65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b",
+  "fixtureModel" : false,
+  "syntheticCase" : true,
+  "initialResponse" : {
+    "content" : "",
+    "calls" : [ {
+      "id" : "8824c74f-0b85-4d5f-8cae-fd33522229d8",
+      "name" : "get_case_details",
+      "arguments" : { }
+    } ],
+    "modelVersion" : "ollama:qwen2.5:1.5b@65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b"
+  },
+  "authorizedToolResult" : {
+    "callId" : "8824c74f-0b85-4d5f-8cae-fd33522229d8",
+    "toolName" : "get_case_details",
+    "error" : false,
+    "value" : {
+      "caseId" : "test-b5a993f7-7a91-4239-9982-cd1b1433eff7",
+      "status" : "INVESTIGATING",
+      "summary" : "Synthetic summary"
+    }
+  },
+  "followUpResponse" : {
+    "content" : "The synthetic case with the ID \"test-b5a993f7-7a91-4239-9982-cd1b1433eff7\" is currently in the \"INVESTIGATING\" status. The summary of the synthetic case is \"Synthetic summary\".",
+    "calls" : [ ],
+    "modelVersion" : "ollama:qwen2.5:1.5b@65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b"
+  },
+  "accountEffects" : 0
+}
