@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+============================================================================
+FILE:        src/main/resources/logback-mcp.xml
+PURPOSE:     Route application logs to stderr so stdout remains MCP protocol only.
+OWNER:       Platform & Operations
+SINCE:       week-28
+RELATED:     application-mcp.yml
+NOTES:
+  - The Spring banner is disabled separately in the MCP profile.
+============================================================================
+-->
+<configuration>
+    <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.err</target>
+        <encoder><pattern>%d{HH:mm:ss} %-5level %logger{36} - %msg%n</pattern></encoder>
+    </appender>
+    <root level="INFO"><appender-ref ref="STDERR"/></root>
+</configuration>

@@ -1,3 +1,14 @@
+# ============================================================================
+# FILE:        src/main/resources/application.yml
+# PURPOSE:     Configure database, versioned knowledge, and explicitly selected Week 28 adapters.
+# OWNER:       Platform & Operations
+# SINCE:       week-26
+# RELATED:     ADR-003, ADR-005, ADR-006
+# NOTES:
+#   - MCP, agent model calls, and approval signing are disabled or unavailable by default.
+#   - Fixture embeddings remain labelled and are not evidence of semantic model quality.
+#   - Secrets and accounts come from operator configuration, never request bodies.
+# ============================================================================
 server:
   port: 8080
 spring:
@@ -18,6 +29,9 @@ spring:
     job:
       enabled: false
   ai:
+    mcp:
+      server:
+        enabled: false
     model:
       chat: none
       embedding: ${AI_EMBEDDING_MODEL:none}
@@ -33,8 +47,23 @@ spring:
 knowledge:
   embedding-provider: ${EMBEDDING_PROVIDER:local}
   reports-directory: ${INGESTION_REPORTS_DIRECTORY:reports}
+  retrieval:
+    embedding-provider: ${RETRIEVAL_EMBEDDING_PROVIDER:fixture}
+    embedding-model: ${OLLAMA_EMBEDDING_MODEL:embeddinggemma}
+    answer-provider: ${RETRIEVAL_ANSWER_PROVIDER:extractive}
+    answer-model: ${OLLAMA_ANSWER_MODEL:gemma3:4b}
+    ollama-url: ${OLLAMA_URL:http://127.0.0.1:11434}
+    classification-ceiling: C2
+    minimum-similarity: 0.15
 management:
   endpoints:
     web:
       exposure:
         include: health,info
+
+# No signing key or native agent model is silently generated or selected.
+decision:
+  approval-key: ${APPROVAL_SIGNING_KEY:}
+investigation:
+  model-provider: ${INVESTIGATION_MODEL_PROVIDER:disabled}
+  model: ${INVESTIGATION_MODEL:qwen2.5:1.5b}

@@ -1,0 +1,28 @@
+# ============================================================================
+# FILE:        src/main/resources/application-mcp.yml
+# PURPOSE:     Enable only the local stdio MCP transport with protocol-clean stdout.
+# OWNER:       Investigation Orchestration / Platform
+# SINCE:       week-28
+# RELATED:     ADR-006, docs/week28-implementation.md
+# NOTES:
+#   - The process operator must configure a subject, one case, accounts, and database access.
+#   - This is local process identity provisioning, not remote multi-user OAuth.
+# ============================================================================
+spring:
+  main:
+    web-application-type: none
+    banner-mode: off
+  ai:
+    mcp:
+      server:
+        enabled: true
+        stdio: true
+        name: fraud-investigator
+        version: week-28
+        type: SYNC
+        capabilities:
+          resource: false
+          prompt: false
+          completion: false
+logging:
+  config: classpath:logback-mcp.xml
