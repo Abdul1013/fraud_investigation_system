@@ -1,8 +1,19 @@
 /**
- * WEEK 27 — Preserve Week 26 ingestion regression coverage after adding the separate retrieval
- * index. Cleanup includes the two new index tables because their foreign keys reference the
- * existing lineage. This TRUNCATE runs only in the fresh Testcontainer, never an existing user
- * database.
+ * ============================================================================
+ * FILE:        src/test/java/com/fraudengine/ingestion/IngestionJobIntegrationTest.java
+ * CONTEXT:     knowledge
+ * LAYER:       test
+ * PURPOSE:     Verify knowledge behavior against PostgreSQL and authenticated HTTP.
+ * ----------------------------------------------------------------------------
+ * OWNER:       Knowledge & Evidence
+ * SINCE:       week-26
+ * RELATED:     ADR-005, Week 27 retrieval, Week 28 authentication
+ * ----------------------------------------------------------------------------
+ * NOTES:
+ *   - Testcontainers isolate destructive cleanup from user databases.
+ *   - HTTP requests authenticate as test-only curator and obtain real CSRF tokens.
+ *   - Production filters remain enabled so prior validation and conflict behavior is checked.
+ * ============================================================================
  */
 package com.fraudengine.ingestion;
 
@@ -43,6 +54,7 @@ class IngestionJobIntegrationTest {
 
     @DynamicPropertySource
     static void database(DynamicPropertyRegistry registry) {
+        com.fraudengine.platform.security.AuthenticatedHttp.accounts(registry);
         registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
         registry.add("spring.datasource.username", POSTGRES::getUsername);
         registry.add("spring.datasource.password", POSTGRES::getPassword);
@@ -51,13 +63,15 @@ class IngestionJobIntegrationTest {
     @Autowired Job knowledgeIngestionJob;
     @Autowired JobRepository repository;
     @Autowired JdbcTemplate jdbc;
-    @Autowired org.springframework.boot.test.web.client.TestRestTemplate http;
+    @Autowired org.springframework.boot.test.web.client.TestRestTemplate rawHttp;
+    com.fraudengine.platform.security.AuthenticatedHttp http;
     @MockitoSpyBean EmbeddingModel embeddingModel;
     @TempDir Path corpus;
     TaskExecutorJobLauncher launcher;
 
     @BeforeEach
     void setup() throws Exception {
+        http = new com.fraudengine.platform.security.AuthenticatedHttp(rawHttp);
         launcher = new com.fraudengine.knowledge.ingestion.RetryingJobLauncher();
         launcher.setJobRepository(repository);
         launcher.afterPropertiesSet();

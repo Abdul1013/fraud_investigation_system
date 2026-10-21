@@ -1,11 +1,19 @@
 /**
- *SQL adapter shared by both retrieval strategies. Every query joins published corpus
- * membership, source registry, chunk lineage, and stored text BEFORE ranking; classification and
- * effective-date filters apply identically to vector and keyword candidates. The HTTP body cannot
- * enlarge the allowed classifications. Named SQL parameters avoid injection, and bounded candidates
- * keep this first implementation understandable. Exact cosine search is appropriate for the tiny
- * corpus; benchmarking an approximate index comes later. Index completeness errors are explicit,
- * never silent fallbacks.
+ * ============================================================================
+ * FILE:        src/main/java/com/fraudengine/knowledge/retrieval/RetrievalRepository.java
+ * CONTEXT:     knowledge
+ * LAYER:       infrastructure
+ * PURPOSE:     Apply corpus, classification, case-source, and date scope before ranking.
+ * ----------------------------------------------------------------------------
+ * OWNER:       Knowledge & Evidence
+ * SINCE:       week-27
+ * RELATED:     ADR-005, Week 28 case-scoped evidence
+ * ----------------------------------------------------------------------------
+ * NOTES:
+ *   - Both strategies and completeness checks use the same bound SQL scope.
+ *   - Null source scope is reserved for the curator-only legacy service and indexing.
+ *   - Empty source scope never means unrestricted access; identifiers are bound parameters.
+ * ============================================================================
  */
 package com.fraudengine.knowledge.retrieval;
 
@@ -30,6 +38,7 @@ public class RetrievalRepository {
                         JOIN knowledge.vector_store v ON v.id=c.vector_id
                         WHERE m.corpus_version=:corpus AND d.classification IN (:allowed)
                           AND d.classification <> 'C3'
+                          AND (:allSources OR (:hasSources AND d.source_id IN (:sourceIds)))
                           AND (CAST(:type AS text) IS NULL OR d.doc_type=:type)
                         """;
         private static final String DATES = """
@@ -62,10 +71,24 @@ public class RetrievalRepository {
         private Map<String, Object> parameters(
                         int corpus, String type, LocalDate asOf, List<String> allowed) {
                 Map<String, Object> params = new HashMap<>();
+                params.put("allSources", true);
+                params.put("hasSources", false);
+                params.put("sourceIds", List.of(""));
                 params.put("corpus", corpus);
                 params.put("type", type);
                 params.put("allowed", allowed);
                 params.put("asOf", Timestamp.from(asOf.atStartOfDay(ZoneOffset.UTC).toInstant()));
+                return params;
+        }
+
+        private Map<String, Object> scopedParameters(int corpus, String type, LocalDate asOf,
+                        List<String> allowed, Set<String> sourceIds) {
+                var params = parameters(corpus, type, asOf, allowed);
+                if (sourceIds != null) {
+                        params.put("allSources", false);
+                        params.put("hasSources", !sourceIds.isEmpty());
+                        params.put("sourceIds", sourceIds.isEmpty() ? List.of("") : List.copyOf(sourceIds));
+                }
                 return params;
         }
 
@@ -76,9 +99,19 @@ public class RetrievalRepository {
                                 this::passage);
         }
 
+        public List<RetrievalResult.Passage> eligibleScoped(int corpus, List<String> allowed, Set<String> sourceIds) {
+                return named.query("SELECT " + COLUMNS + ",0.0 AS score " + SCOPE + " ORDER BY c.id",
+                                scopedParameters(corpus, null, LocalDate.now(ZoneOffset.UTC), allowed, sourceIds), this::passage);
+        }
+
         public void requireComplete(
                         int corpus, String type, LocalDate date, List<String> allowed, String space) {
-                var params = parameters(corpus, type, date, allowed);
+                requireComplete(corpus, type, date, allowed, space, null);
+        }
+
+        public void requireComplete(int corpus, String type, LocalDate date, List<String> allowed,
+                        String space, Set<String> sourceIds) {
+                var params = scopedParameters(corpus, type, date, allowed, sourceIds);
                 params.put("space", space);
                 int missing = named.queryForObject(
                                 "SELECT COUNT(*) "
@@ -104,7 +137,12 @@ public class RetrievalRepository {
                         float[] vector,
                         int limit,
                         double minimum) {
-                var params = parameters(corpus, request.docType(), date(request), allowed);
+                return vector(corpus, request, allowed, space, vector, limit, minimum, null);
+        }
+
+        public List<RetrievalResult.Passage> vector(int corpus, RetrievalRequest request, List<String> allowed,
+                        String space, float[] vector, int limit, double minimum, Set<String> sourceIds) {
+                var params = scopedParameters(corpus, request.docType(), date(request), allowed, sourceIds);
                 params.put("space", space);
                 params.put("vector", vectorLiteral(vector));
                 params.put("limit", limit);
@@ -122,7 +160,12 @@ public class RetrievalRepository {
 
         public List<RetrievalResult.Passage> keyword(
                         int corpus, RetrievalRequest request, List<String> allowed, int limit) {
-                var params = parameters(corpus, request.docType(), date(request), allowed);
+                return keyword(corpus, request, allowed, limit, null);
+        }
+
+        public List<RetrievalResult.Passage> keyword(int corpus, RetrievalRequest request,
+                        List<String> allowed, int limit, Set<String> sourceIds) {
+                var params = scopedParameters(corpus, request.docType(), date(request), allowed, sourceIds);
                 String terms = Arrays.stream(request.query().toLowerCase(Locale.ROOT).split("[^\\p{L}\\p{N}]+"))
                                 .filter(s -> !s.isBlank())
                                 .distinct()
