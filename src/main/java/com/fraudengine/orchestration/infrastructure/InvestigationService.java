@@ -12,7 +12,7 @@
  * NOTES:
  *   - Six turns, three reads including proposal retrieval, one proposal, and a two-minute deadline are enforced in code.
  *   - Each model and tool turn has a twenty-second timeout; the local HTTP adapter responds to interruption.
- *   - No transaction spans model work or human waiting; startup crash recovery is intentionally Week 29 work.
+ *   - Explicit local compatibility engine only; normal profiles use the Week 29 durable runner.
  *   - Run metadata is C2; launch and status require a C2 case grant.
  * ============================================================================
  */
@@ -31,6 +31,7 @@ import java.util.concurrent.*;
 import org.springframework.stereotype.Service;
 
 @Service
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(name="investigation.engine", havingValue="local")
 public class InvestigationService implements OrchestrationApi {
     private final InvestigationRepository repository;
     private final CaseApi cases;
