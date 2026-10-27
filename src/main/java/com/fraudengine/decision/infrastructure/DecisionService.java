@@ -47,16 +47,42 @@ public class DecisionService implements DecisionApi {
     private final AuditApi audit;
     private final ApprovalTokenService tokens;
     private final ObjectMapper mapper;
+    private final PromptCatalog promptCatalog;
+    private final OperationalTelemetry telemetry;
     private final WriteGate gate = new WriteGate();
 
     public DecisionService(JdbcTemplate jdbc, CurrentCaller identity, StepUpVerifier stepUp, CaseApi cases,
-            KnowledgeApi knowledge, AuditApi audit, ApprovalTokenService tokens, ObjectMapper mapper) {
-        this.jdbc = jdbc; this.identity = identity; this.stepUp = stepUp; this.cases = cases;
-        this.knowledge = knowledge; this.audit = audit; this.tokens = tokens; this.mapper = mapper;
+            KnowledgeApi knowledge, AuditApi audit, ApprovalTokenService tokens, ObjectMapper mapper,PromptCatalog promptCatalog,OperationalTelemetry telemetry) {
+        this.telemetry=telemetry;this.jdbc = jdbc; this.identity = identity; this.stepUp = stepUp; this.cases = cases;
+        this.knowledge = knowledge; this.audit = audit; this.tokens = tokens; this.mapper = mapper; this.promptCatalog=promptCatalog;
     }
 
     @Override
     public RecommendationDto propose(String caseId, String rationale, RetrievalResult evidence, String modelVersion) {
+        return proposeOnce(null,caseId,rationale,evidence,modelVersion);
+    }
+
+    @Override
+    public RecommendationDto proposeOnce(String operationKey,String caseId,String rationale,RetrievalResult evidence,String modelVersion) {
+        return proposeVersioned(operationKey,caseId,rationale,evidence,modelVersion,
+                modelVersion!=null&&modelVersion.startsWith("mcp-client:")?"mcp-client:prompt-unspecified":"week28-investigator-v1");
+    }
+
+    @Override public RecommendationDto proposeReleased(String operationKey,String caseId,String rationale,RetrievalResult evidence,AiVersionEnvelope version) {
+        var release=version.release();
+        if(release!=null&&(!release.proposalsEnabled()||release.corpusVersion()!=evidence.corpusVersion()||!release.embeddingSpace().equals(evidence.embeddingSpace())
+            ||!release.retrievalConfiguration().equals(evidence.retrievalConfigVersion())||!release.retrievalStrategy().equals(evidence.strategy())||evidence.degraded()))throw new AccessDeniedException();
+        return proposeBinding(operationKey,caseId,rationale,evidence,version.modelVersion(),version.promptReference(),release);
+    }
+    @Override
+    public RecommendationDto proposeVersioned(String operationKey,String caseId,String rationale,RetrievalResult evidence,String modelVersion,String promptReference) {
+        return proposeBinding(operationKey,caseId,rationale,evidence,modelVersion,promptReference,null);
+    }
+    private RecommendationDto proposeBinding(String operationKey,String caseId,String rationale,RetrievalResult evidence,String modelVersion,String promptReference,ReleaseEnvelope release) {
+        if(promptReference==null||promptReference.isBlank()||promptReference.length()>300)throw new IllegalArgumentException("Invalid prompt reference");
+        if(!java.util.Set.of("week28-investigator-v1","mcp-client:prompt-unspecified").contains(promptReference))
+            promptCatalog.byReference(promptReference);
+        if (operationKey!=null && (operationKey.isBlank() || operationKey.length()>150)) throw new IllegalArgumentException("Invalid operation key");
         var caller = require(Permission.PROPOSE_ACTION);
         requireCase(caseId);
         if (rationale == null || rationale.isBlank() || rationale.length() > 2000
@@ -66,13 +92,22 @@ public class DecisionService implements DecisionApi {
         knowledge.validateCaseEvidence(caseId, evidence);
         var binding = new Binding("binding-v1", caseId, "SIMULATED_ACCOUNT_FREEZE", "simulated:" + caseId,
                 Map.of("frozen", true), rationale, evidence, modelVersion,
-                modelVersion.startsWith("mcp-client:") ? "mcp-client:prompt-unspecified" : "week28-investigator-v1", 1);
+                promptReference, 1,release);
         String json = json(binding), digest = hash(json);
         UUID id = UUID.nameUUIDFromBytes((caller.subject() + ":" + digest).getBytes(StandardCharsets.UTF_8));
         int inserted = jdbc.update("""
                 INSERT INTO decision.recommendations(id,case_id,proposer,rationale,binding_json,binding_digest,state)
                 VALUES (?,?,?,?,?,?,'PENDING_APPROVAL') ON CONFLICT DO NOTHING
                 """, id, caseId, caller.subject(), rationale, json, digest);
+        if (operationKey!=null) {
+            jdbc.update("INSERT INTO decision.proposal_operations VALUES (?,?,?,?) ON CONFLICT DO NOTHING",
+                    caller.subject(),operationKey,digest,id);
+            var operation=jdbc.queryForMap("SELECT binding_digest,recommendation_id FROM decision.proposal_operations WHERE subject=? AND operation_key=?",
+                    caller.subject(),operationKey);
+            if (!digest.equals(operation.get("binding_digest"))) throw new IllegalStateException("Operation key conflict");
+            id=(UUID)operation.get("recommendation_id");
+        }
+        if(inserted==1)jdbc.update("UPDATE decision.recommendations SET trace_parent=? WHERE id=?",telemetry.parent(),id);
         if (inserted == 1) audit.append(caller.subject(), "RECOMMENDATION_CREATED", caseId, id.toString());
         return dto(load(id));
     }
@@ -82,17 +117,22 @@ public class DecisionService implements DecisionApi {
         identity.requireAuthenticated();
         var row = load(id);
         requireCase(row.caseId());
+        observeVersions(row);
         var binding = binding(row);
         knowledge.validateCaseEvidence(row.caseId(), binding.evidence());
         return new RecommendationReview(dto(row), binding.action(), binding.target(), binding.rationale(),
-                binding.evidence(), binding.modelVersion(), binding.promptVersion());
+                binding.evidence(), binding.modelVersion(), binding.promptVersion(),binding.release());
     }
 
     @Override
     public ApprovalTokenDto approve(UUID id) {
+        return telemetry.continueTrace(recommendationParent(id),OperationalTelemetry.Stage.APPROVAL,()->approveMeasured(id));
+    }
+    private ApprovalTokenDto approveMeasured(UUID id) {
         var caller = require(Permission.APPROVE_ACTION);
         var row = load(id);
         requireCase(row.caseId());
+        observeVersions(row);
         try {
             stepUp.requireVerified(caller.subject());
             boolean expiredApproval = "APPROVED".equals(row.state()) && row.expiresAt() != null
@@ -111,6 +151,7 @@ public class DecisionService implements DecisionApi {
                 approval_id=?,approver=?,expires_at=? WHERE id=?
                 """, signed.id(), caller.subject(), java.sql.Timestamp.from(signed.expiresAt()), id);
         audit.append(caller.subject(), "APPROVED".equals(row.state()) ? "APPROVAL_RENEWED" : "APPROVAL_GRANTED", row.caseId(), id.toString());
+        outcome(id,"APPROVED");
         return new ApprovalTokenDto(id, signed.token(), signed.expiresAt());
     }
 
@@ -119,18 +160,28 @@ public class DecisionService implements DecisionApi {
         var caller = require(Permission.APPROVE_ACTION);
         var row = load(id);
         requireCase(row.caseId());
+        observeVersions(row);
         if (!"PENDING_APPROVAL".equals(row.state())) throw new IllegalStateException("Recommendation is not pending");
         jdbc.update("UPDATE decision.recommendations SET state='REJECTED',version=version+1 WHERE id=?", id);
         audit.append(caller.subject(), "RECOMMENDATION_REJECTED", row.caseId(), id.toString());
+        outcome(id,"REJECTED");
         return dto(load(id));
     }
 
     @Override
-    public ExecutionResult execute(UUID id, String token, String key) {
+    public ExecutionResult execute(UUID id,String token,String key) {
+        return telemetry.continueTrace(recommendationParent(id),OperationalTelemetry.Stage.EXECUTION,()->executeMeasured(id,token,key));
+    }
+    private String recommendationParent(UUID id) {
+        var values=jdbc.query("SELECT trace_parent FROM decision.recommendations WHERE id=?",(row,n)->row.getString(1),id);
+        if(values.isEmpty())throw new AccessDeniedException();return values.getFirst();
+    }
+    private ExecutionResult executeMeasured(UUID id,String token,String key) {
         var caller = require(Permission.APPROVE_ACTION);
         if (key == null || key.isBlank() || key.length() > 100) throw new IllegalArgumentException("Invalid idempotency key");
         var row = load(id);
         requireCase(row.caseId());
+        observeVersions(row);
         String requestDigest = hash(id + ":" + token);
         var existing = jdbc.query("SELECT request_digest,result_json FROM decision.execution_results"
                 + " WHERE subject=? AND idempotency_key=?", (rs, n) -> Map.entry(rs.getString(1), rs.getString(2)),
@@ -157,7 +208,12 @@ public class DecisionService implements DecisionApi {
         jdbc.update("INSERT INTO decision.execution_results VALUES (?,?,?,?,?)",
                 caller.subject(), key, requestDigest, id, json(result));
         audit.append(caller.subject(), "SIMULATED_FREEZE_EXECUTED", row.caseId(), id.toString());
+        outcome(id,"EXECUTED");
         return result;
+    }
+
+    private void outcome(UUID id,String state) {
+        jdbc.update("INSERT INTO decision.outcome_outbox(recommendation_id,state) VALUES (?,?) ON CONFLICT DO NOTHING",id,state);
     }
 
     private void requireCase(String caseId) {
@@ -194,8 +250,14 @@ public class DecisionService implements DecisionApi {
         try { return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(value.getBytes(StandardCharsets.UTF_8))); }
         catch (java.security.NoSuchAlgorithmException error) { throw new IllegalStateException(error); }
     }
+    private void observeVersions(Row row) {
+        var selected=binding(row);
+        telemetry.version(OperationalTelemetry.Version.PROMPT,selected.promptVersion());
+        telemetry.version(OperationalTelemetry.Version.MODEL,selected.modelVersion());
+        telemetry.version(OperationalTelemetry.Version.RETRIEVAL,selected.evidence().retrievalConfigVersion());
+    }
     private record Row(UUID id, String caseId, String proposer, String json, String digest, String state,
             UUID approvalId, String approver, Instant expiresAt) {}
     private record Binding(String bindingVersion, String caseId, String action, String target, Map<String, Boolean> parameters,
-            String rationale, RetrievalResult evidence, String modelVersion, String promptVersion, int recommendationVersion) {}
+            String rationale, RetrievalResult evidence, String modelVersion, String promptVersion, int recommendationVersion,@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL) ReleaseEnvelope release) {}
 }

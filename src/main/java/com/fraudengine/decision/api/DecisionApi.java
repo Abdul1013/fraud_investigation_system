@@ -10,6 +10,7 @@
  * RELATED:     ADR-001, ADR-005, docs/week28-implementation-plan.md
  * ----------------------------------------------------------------------------
  * NOTES:
+ *   - Backend operation keys deduplicate activity retries; changed bindings with the same key conflict.
  *   - Only backend evidence results may enter propose; the implementation revalidates their exact lineage.
  *   - Approve, reject, and execute are never registered as model or MCP investigator tools.
  * ============================================================================
@@ -21,6 +22,9 @@ import com.fraudengine.knowledge.api.dto.RetrievalResult;
 import java.util.UUID;
 
 public interface DecisionApi {
+    RecommendationDto proposeReleased(String operationKey,String caseId,String rationale,RetrievalResult evidence,com.fraudengine.platform.api.AiVersionEnvelope version);
+    RecommendationDto proposeVersioned(String operationKey,String caseId,String rationale,RetrievalResult evidence,String modelVersion,String promptReference);
+    RecommendationDto proposeOnce(String operationKey,String caseId,String rationale,RetrievalResult evidence,String modelVersion);
     RecommendationDto propose(String caseId, String rationale, RetrievalResult evidence, String modelVersion);
     RecommendationReview review(UUID recommendationId);
     ApprovalTokenDto approve(UUID recommendationId);
