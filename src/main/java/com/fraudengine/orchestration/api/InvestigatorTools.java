@@ -10,6 +10,7 @@
  * RELATED:     ADR-001, ADR-005, docs/week28-implementation-plan.md
  * ----------------------------------------------------------------------------
  * NOTES:
+ *   - callOnce operation keys come from the server workflow, never model arguments.
  *   - Case identity is bound outside model arguments and checked again by owning application services.
  *   - Approval and execution are absent from this contract.
  * ============================================================================
@@ -21,6 +22,8 @@ import java.util.List;
 
 public interface InvestigatorTools {
     List<ToolCallingPort.Definition> definitions();
+    Result callVersioned(String caseId,ToolCallingPort.Call call,com.fraudengine.platform.api.AiVersionEnvelope version,String operationKey);
+    Result callOnce(String caseId,ToolCallingPort.Call call,String modelVersion,String operationKey);
     Result call(String caseId, ToolCallingPort.Call call, String modelVersion);
     record Result(String callId, String toolName, boolean error, Object value) {}
 }
