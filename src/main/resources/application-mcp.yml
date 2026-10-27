@@ -26,3 +26,11 @@ spring:
           completion: false
 logging:
   config: classpath:logback-mcp.xml
+
+# MCP investigator tools do not launch the built-in workflow engine.
+investigation:
+  engine: local
+
+engine:
+  security:
+    mode: basic

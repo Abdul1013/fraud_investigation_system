@@ -56,6 +56,13 @@ knowledge:
     classification-ceiling: C2
     minimum-similarity: 0.15
 management:
+  # Export requires the explicit observability profile.
+  tracing:
+    enabled: false
+  otlp:
+    metrics:
+      export:
+        enabled: false
   endpoints:
     web:
       exposure:
@@ -65,5 +72,24 @@ management:
 decision:
   approval-key: ${APPROVAL_SIGNING_KEY:}
 investigation:
+  prompt-version: ${INVESTIGATION_PROMPT_VERSION:investigator-v1}
+  engine: ${INVESTIGATION_ENGINE:temporal}
   model-provider: ${INVESTIGATION_MODEL_PROVIDER:disabled}
   model: ${INVESTIGATION_MODEL:qwen2.5:1.5b}
+
+# Week 31 defaults to verified OIDC; Basic requires local-learning or test.
+engine:
+  security:
+    mode: ${SECURITY_MODE:oidc}
+    issuer: ${OIDC_ISSUER:http://localhost:8081/realms/fraud}
+    audience: ${OIDC_AUDIENCE:fraud-api}
+logging:
+  exception-conversion-word: "%nopex"
+  level:
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.springframework.jdbc: INFO
+
+# New investigations pin the complete configured release; old rows keep their original envelope.
+release:
+  active-file: ${AI_RELEASE_FILE:classpath:releases/release-a.json}

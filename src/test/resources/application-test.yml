@@ -1,7 +1,30 @@
+# ============================================================================
+# FILE:        src/test/resources/application-test.yml
+# PURPOSE:     Configure isolated local workflow infrastructure and explicit compatibility tests.
+# OWNER:       Fraud Investigation Engineering
+# SINCE:       week-26
+# RELATED:     context.md, curriculum week 29
+# NOTES:
+#   - Keep measured results separate from fixtures and pending human review.
+# ============================================================================
 spring:
   batch:
     job:
       enabled: false
 knowledge:
+  trust:
+    required: false
   embedding-provider: local
   reports-directory: target/test-reports
+
+# Week 28 compatibility tests use the local engine; durable tests override explicitly.
+investigation:
+  engine: local
+
+engine:
+  security:
+    mode: basic
+
+# Fixture compatibility is explicit; dedicated release tests provide their own native/pinned configuration.
+release:
+  active-file: ""
