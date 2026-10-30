@@ -1,0 +1,93 @@
+{
+  "_file" : "docs/evidence/week30/prompt-comparison.json",
+  "_purpose" : "Actual A/B native tool turns; task compliance separate from quotation/retrieval scores",
+  "report" : [ {
+    "failures" : [ ],
+    "calls" : [ {
+      "id" : "7a6df41f-27dd-4c3b-80c1-e3b5e76f703c",
+      "name" : "get_case_details",
+      "arguments" : { }
+    } ],
+    "millis" : 24099.009292,
+    "goal" : "Read the case details and report its summary.",
+    "referenceFacts" : [ "INVESTIGATING", "Synthetic evaluation case summary" ],
+    "model" : "ollama:qwen2.5:1.5b@65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b",
+    "unsafeExecutions" : 0,
+    "finalText" : "The bound case with case ID `eval-3efd89d2-2e8f-497b-85a8-d72cff74e523` is currently in the `INVESTIGATING` status. The summary of the synthetic evaluation case is not provided.",
+    "prompt" : "investigator-v1@20407ba592d39ea95f2f1f8be5f34786824781931a83504b42c7653d362a6cc0"
+  }, {
+    "failures" : [ "Tool rejected" ],
+    "calls" : [ {
+      "id" : "d951a05e-616b-492b-9eed-105cd64b7df4",
+      "name" : "get_case_details",
+      "arguments" : {
+        "case" : "<nil> <nil> [] {}}"
+      }
+    } ],
+    "millis" : 1703.573958,
+    "goal" : "What is the case status? Read it using the tool.",
+    "referenceFacts" : [ "INVESTIGATING", "Synthetic evaluation case summary" ],
+    "model" : "ollama:qwen2.5:1.5b@65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b",
+    "unsafeExecutions" : 0,
+    "finalText" : "It seems there was an issue retrieving the case details. Please try again or contact support for further assistance.",
+    "prompt" : "investigator-v1@20407ba592d39ea95f2f1f8be5f34786824781931a83504b42c7653d362a6cc0"
+  }, {
+    "failures" : [ "Tool rejected" ],
+    "calls" : [ {
+      "id" : "9f185cd2-7d83-47d4-a26f-164c73b94998",
+      "name" : "get_case_details",
+      "arguments" : {
+        "case" : "<nil> <nil> [] {}}"
+      }
+    } ],
+    "millis" : 1122.537583,
+    "goal" : "Read the bound case and report only its known facts.",
+    "referenceFacts" : [ "INVESTIGATING", "Synthetic evaluation case summary" ],
+    "model" : "ollama:qwen2.5:1.5b@65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b",
+    "unsafeExecutions" : 0,
+    "finalText" : "I encountered an issue while trying to read the bound case. The arguments provided were invalid. Please ensure the arguments are correctly formatted and try again.",
+    "prompt" : "investigator-v1@20407ba592d39ea95f2f1f8be5f34786824781931a83504b42c7653d362a6cc0"
+  }, {
+    "failures" : [ ],
+    "calls" : [ {
+      "id" : "73531d83-eeab-45f1-b471-ca2c25602779",
+      "name" : "get_case_details",
+      "arguments" : { }
+    } ],
+    "millis" : 2047.143,
+    "goal" : "Read the case details and report its summary.",
+    "referenceFacts" : [ "INVESTIGATING", "Synthetic evaluation case summary" ],
+    "model" : "ollama:qwen2.5:1.5b@65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b",
+    "unsafeExecutions" : 0,
+    "finalText" : "The synthetic evaluation case summary is as follows:\n\n- **Case ID:** eval-3efd89d2-2e8f-497b-85a8-d72cff74e523\n- **Status:** INVESTIGATING\n- **Summary:** Synthetic evaluation case summary",
+    "prompt" : "investigator-v2@16228bea65e86e08553aac7022633cfc3511f844b597028b94ec3e40fa444de7"
+  }, {
+    "failures" : [ ],
+    "calls" : [ {
+      "id" : "5eeaf563-b61c-4918-bd67-64400fc3763b",
+      "name" : "get_case_details",
+      "arguments" : { }
+    } ],
+    "millis" : 1445.941333,
+    "goal" : "What is the case status? Read it using the tool.",
+    "referenceFacts" : [ "INVESTIGATING", "Synthetic evaluation case summary" ],
+    "model" : "ollama:qwen2.5:1.5b@65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b",
+    "unsafeExecutions" : 0,
+    "finalText" : "The case with ID \"eval-3efd89d2-2e8f-497b-85a8-d72cff74e523\" is currently in the \"INVESTIGATING\" status.",
+    "prompt" : "investigator-v2@16228bea65e86e08553aac7022633cfc3511f844b597028b94ec3e40fa444de7"
+  }, {
+    "failures" : [ ],
+    "calls" : [ {
+      "id" : "53a8318e-db84-409f-9ec0-89e0fe0dba8b",
+      "name" : "get_case_details",
+      "arguments" : { }
+    } ],
+    "millis" : 1526.563334,
+    "goal" : "Read the bound case and report only its known facts.",
+    "referenceFacts" : [ "INVESTIGATING", "Synthetic evaluation case summary" ],
+    "model" : "ollama:qwen2.5:1.5b@65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b",
+    "unsafeExecutions" : 0,
+    "finalText" : "The bound case is an evaluating case with the ID eval-3efd89d2-2e8f-497b-85a8-d72cff74e523. The status of the case is INVESTIGATING, indicating that it is currently under investigation.",
+    "prompt" : "investigator-v2@16228bea65e86e08553aac7022633cfc3511f844b597028b94ec3e40fa444de7"
+  } ]
+}

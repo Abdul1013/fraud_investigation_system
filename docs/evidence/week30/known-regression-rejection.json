@@ -1,0 +1,10 @@
+{
+  "_file": "docs/evidence/week30/known-regression-rejection.json",
+  "_purpose": "Actual child-JVM regression gate output; exit code asserted as 1",
+  "exitCode": 1,
+  "failures": [
+    "recall@5 below 0.95",
+    "MRR below 0.90"
+  ],
+  "passed": false
+}

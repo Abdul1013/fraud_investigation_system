@@ -1,0 +1,45 @@
+{
+  "_file": "docs/evidence/week30/verification.json",
+  "_purpose": "Actual Week 30 checks, with infrastructure blocker explicit",
+  "date": "2026-10-26",
+  "humanReview": "pending review",
+  "status": "technical checks passed; human review pending",
+  "fixtureChecks": {
+    "passed": 5,
+    "skippedNativeTests": 2,
+    "semanticQuality": false
+  },
+  "nativeChecks": {
+    "passed": 2,
+    "skippedFixtureTest": 1,
+    "embeddings": "embeddinggemma@85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1",
+    "toolModel": "qwen2.5:1.5b@65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b"
+  },
+  "semanticGate": "passed for VECTOR and HYBRID without changing thresholds",
+  "knownRegression": {
+    "processExit": 1,
+    "expected": "rejection"
+  },
+  "fullRegression": {
+    "status": "passed from reconstructed source",
+    "command": "mvn -q clean verify",
+    "tests": 100,
+    "passed": 97,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3,
+    "skips": "Two native-only evaluation methods and one optional native tool test; separate native evaluation completed earlier",
+    "previousAttempts": "Blocked by disk exhaustion and then Docker restart; rerun passed after cleanup"
+  },
+  "cleanReconstruction": {
+    "patchApplication": "passed; sequential patch applied and bytes checked against Week 29 predecessor",
+    "focusedUnitChecks": "EvalGateTest passed (4 tests) in reconstructed source",
+    "fullRegression": "passed: 97 passed, 3 skipped"
+  },
+  "github": {
+    "workflow": "prepared",
+    "remoteRun": "not run; no push authorized",
+    "requiredBranchCheck": "pending administrator configuration"
+  },
+  "weeks31Through34": "ready to continue in order"
+}

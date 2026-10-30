@@ -1,0 +1,8 @@
+{
+  "_file" : "docs/evidence/week30/semantic-gate.json",
+  "_purpose" : "Fixed thresholds evaluated without lowering them",
+  "report" : {
+    "failures" : [ ],
+    "passed" : true
+  }
+}
