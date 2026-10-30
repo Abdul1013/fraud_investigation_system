@@ -1,10 +1,18 @@
 /**
- * Deterministic grounding gate around evidence selection. The service hashes retrieved
- * text against lineage, supplies a bounded context, and accepts only quotations that occur exactly
- * in an allowed passage. Unknown chunk IDs, invented text, malformed claims, and empty support
- * produce explicit abstention. An LLM cannot generate citation metadata or execute tools here. This
- * proves quote support, not relevance or completeness; those are evaluated separately against
- * golden questions.
+ * ============================================================================
+ * FILE:        src/main/java/com/fraudengine/knowledge/retrieval/AnswerService.java
+ * CONTEXT:     knowledge
+ * LAYER:       infrastructure
+ * PURPOSE:     Ground answers in verified quotations and explicitly label scoped degraded reads.
+ * ----------------------------------------------------------------------------
+ * OWNER:       Fraud Investigation Engineering
+ * SINCE:       week-27
+ * RELATED:     ADR-001, ADR-002, curriculum week 33
+ * ----------------------------------------------------------------------------
+ * NOTES:
+ *   - Public HTTP and scoped KnowledgeApi adapters own admission; internal evaluation is a trusted offline workload.
+ *   - Provider failures permit scoped extractive reading only, never proposals or execution.
+ * ============================================================================
  */
 package com.fraudengine.knowledge.retrieval;
 
@@ -20,14 +28,11 @@ import java.util.*;
 public class AnswerService {
     private final RetrievalService retrieval;
     private final EvidenceAnswerPort model;
+    public AnswerService(RetrievalService retrieval,EvidenceAnswerPort model) {this.retrieval=retrieval;this.model=model;}
+    public AnswerResult answer(RetrievalRequest request) {return answerRetrieved(request,retrieval.retrieve(request));}
 
-    public AnswerService(RetrievalService retrieval, EvidenceAnswerPort model) {
-        this.retrieval = retrieval;
-        this.model = model;
-    }
-
-    public AnswerResult answer(RetrievalRequest request) {
-        var found = retrieval.retrieve(request);
+    public AnswerResult answerRetrieved(RetrievalRequest request,RetrievalResult found) {return answerRetrieved(request,found,false);}
+    public AnswerResult answerRetrieved(RetrievalRequest request,RetrievalResult found,boolean allowDegraded) {
         if (found.passages().isEmpty())
             return abstain(found, "INSUFFICIENT_EVIDENCE", "not-called");
         Map<String, RetrievalResult.Passage> allowed = new LinkedHashMap<>();
@@ -45,8 +50,17 @@ public class AnswerService {
         }
         if (context.isEmpty())
             return abstain(found, "INSUFFICIENT_EVIDENCE", "not-called");
-        String version = model.modelVersion();
-        var proposed = model.select(request.query(), List.copyOf(context));
+        String version;
+        List<EvidenceAnswerPort.ProposedQuote> proposed;
+        if(found.degraded()) {
+            version="degraded-extractive-v1";proposed=extractive(context);
+        } else {
+            try {version=model.modelVersion();proposed=model.select(request.query(),List.copyOf(context));}
+            catch(com.fraudengine.platform.gateway.ModelUnavailableException unavailable) {
+                if(!allowDegraded)throw unavailable;
+                found=found.asDegraded("ANSWER_PROVIDER_UNAVAILABLE");version="degraded-extractive-v1";proposed=extractive(context);
+            }
+        }
         if (proposed == null || proposed.size() > 3)
             return abstain(found, "INVALID_MODEL_OUTPUT", version);
         List<AnswerResult.SupportedQuote> quotes = new ArrayList<>();
@@ -75,7 +89,12 @@ public class AnswerService {
                                 + "]")
                 .collect(java.util.stream.Collectors.joining("\n\n"));
         return new AnswerResult(
-                "ANSWERED", text, List.copyOf(quotes), found, version, "exact-quotes-v1");
+                found.degraded()?"DEGRADED_READ":"ANSWERED", found.degraded()?"Degraded read (verified quotations only):\n"+text:text, List.copyOf(quotes), found, version, "exact-quotes-v1");
+    }
+
+    private List<EvidenceAnswerPort.ProposedQuote> extractive(List<EvidenceAnswerPort.Evidence> evidence) {
+        return evidence.stream().filter(item->item.text().length()>=8&&item.text().length()<=4000).limit(3)
+            .map(item->new EvidenceAnswerPort.ProposedQuote(item.chunkId(),item.text())).toList();
     }
 
     private AnswerResult abstain(RetrievalResult found, String status, String modelVersion) {

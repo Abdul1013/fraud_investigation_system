@@ -3,65 +3,105 @@
  * FILE:        src/main/java/com/fraudengine/knowledge/infrastructure/CaseEvidenceService.java
  * CONTEXT:     knowledge
  * LAYER:       infrastructure
- * PURPOSE:     Resolves case authorization before invoking the scoped retrieval engine.
+ * PURPOSE:     Authorize scoped reads before cache access and revalidate results after bounded model work.
  * ----------------------------------------------------------------------------
- * OWNER:       Knowledge & Evidence
+ * OWNER:       Fraud Investigation Engineering
  * SINCE:       week-28
- * RELATED:     ADR-001, ADR-005, docs/week28-implementation-plan.md
+ * RELATED:     ADR-001, ADR-002, curriculum week 33
  * ----------------------------------------------------------------------------
  * NOTES:
- *   - Cross-context access uses only CaseApi; the knowledge context owns all retrieval SQL.
- *   - Validation applies to direct bean calls as well as HTTP so future tools cannot bypass bounds.
- *   - A read-only snapshot covers case grants and evidence reads; no model sees unrelated passage text.
+ *   - Cross-context access uses public CaseApi and platform admission contracts only.
+ *   - Cache entries contain evidence, never approval authority. Human validation bypasses read-rate budgeting.
+ *   - Model I/O runs outside database transactions; the separate validator opens a short delivery snapshot.
  * ============================================================================
  */
 package com.fraudengine.knowledge.infrastructure;
 
 import com.fraudengine.cases.api.CaseApi;
 import com.fraudengine.knowledge.api.KnowledgeApi;
-import com.fraudengine.knowledge.api.dto.RetrievalRequest;
-import com.fraudengine.knowledge.api.dto.RetrievalResult;
-import com.fraudengine.knowledge.retrieval.RetrievalService;
+import com.fraudengine.knowledge.api.dto.*;
+import com.fraudengine.knowledge.retrieval.*;
+import com.fraudengine.platform.api.ReadAdmission;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 @Service
 @Validated
 public class CaseEvidenceService implements KnowledgeApi {
-    private final CaseApi cases;
-    private final RetrievalService retrieval;
-    private final com.fraudengine.knowledge.retrieval.RetrievalRepository repository;
+  private final CaseApi cases;
+  private final AnswerService answers;
+  private final RetrievalService retrieval;
+  private final AuthorizedEvidenceCache cache;
+  private final CaseEvidenceValidator validator;
+  private final ReadAdmission admission;
 
-    public CaseEvidenceService(CaseApi cases, RetrievalService retrieval,
-            com.fraudengine.knowledge.retrieval.RetrievalRepository repository) {
-        this.cases = cases;
-        this.retrieval = retrieval;
-        this.repository = repository;
-    }
+  public CaseEvidenceService(
+      CaseApi cases,
+      AnswerService answers,
+      RetrievalService retrieval,
+      AuthorizedEvidenceCache cache,
+      CaseEvidenceValidator validator,
+      ReadAdmission admission) {
+    this.cases = cases;
+    this.answers = answers;
+    this.retrieval = retrieval;
+    this.cache = cache;
+    this.validator = validator;
+    this.admission = admission;
+  }
 
-    @Override
-    @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
-    public void validateCaseEvidence(String caseId, RetrievalResult evidence) {
-        var scope = cases.evidenceScope(caseId);
-        if (scope.sourceIds().isEmpty()) throw new com.fraudengine.platform.api.AccessDeniedException();
-        var allowed = retrieval.allowedClassifications().stream()
-                .filter(value -> value.compareTo(scope.classificationCeiling()) <= 0).toList();
-        repository.resolveCorpus(evidence.corpusVersion());
-        var eligible = repository.eligibleScoped(evidence.corpusVersion(), allowed, scope.sourceIds());
-        if (evidence.passages() == null || evidence.passages().isEmpty() || evidence.passages().size() > 20
-                || evidence.passages().stream().anyMatch(passage -> passage == null
-                    || eligible.stream().noneMatch(stored -> stored.citation().equals(passage.citation())
-                            && stored.text().equals(passage.text())))) {
-            throw new com.fraudengine.platform.api.AccessDeniedException();
-        }
+  private RetrievalResult scoped(String caseId, RetrievalRequest request) {
+    var scope = cases.evidenceScope(caseId);
+    RetrievalResult found;
+    try {
+      found =
+          cache.read(
+              scope,
+              request,
+              retrieval.version(request, true),
+              () ->
+                  retrieval.retrieveScoped(
+                      request, scope.classificationCeiling(), scope.sourceIds()));
+    } catch (com.fraudengine.platform.gateway.ModelUnavailableException unavailable) {
+      found = retrieval.degradedScoped(request, scope.classificationCeiling(), scope.sourceIds());
     }
+    validator.validateRead(caseId, found);
+    return found;
+  }
 
-    @Override
-    @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
-    public RetrievalResult retrieveCaseEvidence(String caseId, RetrievalRequest request) {
-        var scope = cases.evidenceScope(caseId);
-        return retrieval.retrieveScoped(request, scope.classificationCeiling(), scope.sourceIds());
-    }
+  @Override
+  public AnswerResult answerCaseEvidence(String caseId, RetrievalRequest request) {
+    return admission.call(
+        () -> {
+          var result = answers.answerRetrieved(request, scoped(caseId, request), true);
+          validator.validateRead(caseId, result.retrieval());
+          return result;
+        });
+  }
+
+  @Override
+  public RetrievalResult retrieveCaseEvidence(String caseId, RetrievalRequest request) {
+    return admission.call(() -> scoped(caseId, request));
+  }
+
+  @Override
+  public RetrievalResult retrievePinnedCaseEvidence(
+      String caseId,
+      RetrievalRequest request,
+      com.fraudengine.platform.api.ReleaseEnvelope release) {
+    return admission.call(
+        () -> {
+          var scope = cases.evidenceScope(caseId);
+          var result =
+              retrieval.retrievePinned(
+                  request, scope.classificationCeiling(), scope.sourceIds(), release);
+          validator.validateRead(caseId, result);
+          return result;
+        });
+  }
+
+  @Override
+  public void validateCaseEvidence(String caseId, RetrievalResult evidence) {
+    validator.validateDecision(caseId, evidence);
+  }
 }

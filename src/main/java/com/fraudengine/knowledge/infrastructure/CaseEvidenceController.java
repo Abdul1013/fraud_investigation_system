@@ -40,6 +40,11 @@ public class CaseEvidenceController {
         return knowledge.retrieveCaseEvidence(caseId, request);
     }
 
+    @PostMapping("/v1/cases/{caseId}/answers")
+    public com.fraudengine.knowledge.api.dto.AnswerResult answer(@PathVariable String caseId,@Valid @RequestBody RetrievalRequest request) {
+        return knowledge.answerCaseEvidence(caseId,request);
+    }
+
     @ExceptionHandler({CorpusUnavailableException.class, IndexUnavailableException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, String> unavailable(RuntimeException error) {

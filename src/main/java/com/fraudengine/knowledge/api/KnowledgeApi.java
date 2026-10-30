@@ -18,12 +18,19 @@ package com.fraudengine.knowledge.api;
 
 import com.fraudengine.knowledge.api.dto.RetrievalRequest;
 import com.fraudengine.knowledge.api.dto.RetrievalResult;
-
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 public interface KnowledgeApi {
-    void validateCaseEvidence(String caseId, @NotNull RetrievalResult evidence);
+  com.fraudengine.knowledge.api.dto.AnswerResult answerCaseEvidence(
+      String caseId, @NotNull @Valid RetrievalRequest request);
 
-    RetrievalResult retrieveCaseEvidence(String caseId, @NotNull @Valid RetrievalRequest request);
+  RetrievalResult retrievePinnedCaseEvidence(
+      String caseId,
+      @NotNull @Valid RetrievalRequest request,
+      @NotNull com.fraudengine.platform.api.ReleaseEnvelope release);
+
+  void validateCaseEvidence(String caseId, @NotNull RetrievalResult evidence);
+
+  RetrievalResult retrieveCaseEvidence(String caseId, @NotNull @Valid RetrievalRequest request);
 }
