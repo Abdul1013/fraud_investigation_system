@@ -10,8 +10,8 @@
  * RELATED:     ADR-001, ADR-005, docs/week28-implementation-plan.md
  * ----------------------------------------------------------------------------
  * NOTES:
- *   - Only existing investigator-capable accounts without approval rights may be bound.
- *   - Process launch and local OS access are the trust boundary; no identity comes from tool arguments.
+ *   - Only active investigator-capable configured/linked identities without approval rights may be bound.
+ *   - OIDC workers recheck enabled identity links; local stdio uses process provisioning, never tool arguments.
  * ============================================================================
  */
 package com.fraudengine.platform.security;
@@ -26,11 +26,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConfiguredServiceIdentity implements LocalServiceIdentity {
     private final UserDetailsService users;
-    public ConfiguredServiceIdentity(UserDetailsService users) { this.users = users; }
+    private final OidcIdentityLinks links;
+    private final String mode;
+    public ConfiguredServiceIdentity(UserDetailsService users,OidcIdentityLinks links,
+            @org.springframework.beans.factory.annotation.Value("${engine.security.mode:oidc}")String mode) { this.users=users;this.links=links;this.mode=mode; }
 
     @Override
     public <T> T call(String subject, Supplier<T> callback) {
-        var user = users.loadUserByUsername(subject);
+        var user = "oidc".equals(mode)?links.worker(subject):users.loadUserByUsername(subject);
         var authorities = user.getAuthorities().stream().map(authority -> authority.getAuthority()).toList();
         if (!authorities.contains(Permission.PROPOSE_ACTION.name())
                 || !authorities.contains(Permission.READ_CASE.name())
