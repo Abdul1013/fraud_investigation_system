@@ -1,9 +1,19 @@
 /**
- * Minimal local-only HTTP adapter using the existing JDK and Jackson dependencies.
- * Loopback validation and disabled redirects keep C2 passages on this machine; no external API
- * credentials or silent cloud fallback are used. The installed model digest is resolved for version
- * evidence. Timeouts and HTTP failures surface as 503 setup errors rather than empty answers or raw
- * provider payloads.
+ * ============================================================================
+ * FILE:        src/main/java/com/fraudengine/platform/gateway/provider/OllamaLocalClient.java
+ * CONTEXT:     platform
+ * LAYER:       infrastructure
+ * PURPOSE:     Send bounded loopback-only provider requests after the centralized outbound privacy check.
+ * ----------------------------------------------------------------------------
+ * OWNER:       Fraud Investigation Engineering
+ * SINCE:       week-27
+ * RELATED:     ADR-001, ADR-002, curriculum week 31
+ * ----------------------------------------------------------------------------
+ * NOTES:
+ *   - All POST bodies pass through RedactionFilter before serialization or HTTP dispatch.
+ *   - Redirects and non-loopback endpoints are rejected; no cloud fallback is available.
+ *   - Pattern redaction supplements structural classification and does not claim complete PII detection.
+ * ============================================================================
  */
 package com.fraudengine.platform.gateway.provider;
 
@@ -17,6 +27,7 @@ import java.util.*;
 
 public class OllamaLocalClient {
     private final URI base;
+    private final com.fraudengine.platform.api.OperationalTelemetry telemetry;
     private final ObjectMapper mapper;
     private final HttpClient http = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(5))
@@ -24,6 +35,12 @@ public class OllamaLocalClient {
             .build();
 
     public OllamaLocalClient(String address, ObjectMapper mapper) {
+        this(address, mapper, null);
+    }
+
+    public OllamaLocalClient(String address, ObjectMapper mapper,
+            com.fraudengine.platform.api.OperationalTelemetry telemetry) {
+        this.telemetry = telemetry;
         base = URI.create(address);
         this.mapper = mapper;
         if (!"http".equals(base.getScheme())
@@ -37,7 +54,24 @@ public class OllamaLocalClient {
     }
 
     public JsonNode post(String path, Object body) {
-        return request(path, body);
+        var protectedBody = new com.fraudengine.platform.gateway.RedactionFilter().payload(mapper.valueToTree(body));
+        java.util.function.Supplier<JsonNode> operation = () -> {
+            if (telemetry != null && protectedBody.path("model").isTextual()) {
+                String selected = protectedBody.path("model").asText();
+                telemetry.version(com.fraudengine.platform.api.OperationalTelemetry.Version.MODEL,
+                        "ollama:" + selected + "@" + digest(selected));
+            }
+            long started = System.nanoTime();
+            var result = request(path, protectedBody);
+            if (telemetry != null)
+                telemetry.usage(Math.max(0, result.path("prompt_eval_count").asLong(0)),
+                        Math.max(0, result.path("eval_count").asLong(0)),
+                        result.path("prompt_eval_count").isIntegralNumber(),
+                        Math.max(0, result.path("total_duration").asLong(System.nanoTime() - started)));
+            return result;
+        };
+        return telemetry == null ? operation.get()
+                : telemetry.observe(com.fraudengine.platform.api.OperationalTelemetry.Stage.PROVIDER, operation);
     }
 
     private JsonNode request(String path, Object body) {
