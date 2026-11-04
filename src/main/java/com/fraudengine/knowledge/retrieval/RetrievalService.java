@@ -19,79 +19,174 @@ package com.fraudengine.knowledge.retrieval;
 
 import com.fraudengine.knowledge.api.dto.*;
 import com.fraudengine.platform.gateway.RetrievalEmbeddingPort;
-
+import java.util.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-
 @Service
 public class RetrievalService {
-    private final RetrievalRepository repository;
-    private final RetrievalEmbeddingPort embeddings;
-    private final List<String> allowed;
-    private final double minimumSimilarity;
+  private final RetrievalRepository repository;
+  private final RetrievalEmbeddingPort embeddings;
+  private final List<String> allowed;
+  private final double minimumSimilarity;
+  private final SourceTrustPolicy trust;
+  private final com.fraudengine.platform.api.OperationalTelemetry telemetry;
 
-    public RetrievalService(
-            RetrievalRepository repository,
-            RetrievalEmbeddingPort embeddings,
-            @Value("${knowledge.retrieval.classification-ceiling:C2}") String ceiling,
-            @Value("${knowledge.retrieval.minimum-similarity:0.15}") double minimum) {
-        if (!List.of("C0", "C1", "C2").contains(ceiling))
-            throw new IllegalArgumentException("Retrieval ceiling must be C0 to C2");
-        if (!Double.isFinite(minimum) || minimum < 0 || minimum > 1)
-            throw new IllegalArgumentException("Invalid similarity threshold");
-        this.repository = repository;
-        this.embeddings = embeddings;
-        this.minimumSimilarity = minimum;
-        allowed = List.of("C0", "C1", "C2").stream().filter(c -> c.compareTo(ceiling) <= 0).toList();
-    }
+  public RetrievalService(
+      RetrievalRepository repository,
+      RetrievalEmbeddingPort embeddings,
+      SourceTrustPolicy trust,
+      @org.springframework.lang.Nullable com.fraudengine.platform.api.OperationalTelemetry telemetry,
+      @Value("${knowledge.retrieval.classification-ceiling:C2}") String ceiling,
+      @Value("${knowledge.retrieval.minimum-similarity:0.15}") double minimum) {
+    if (!List.of("C0", "C1", "C2").contains(ceiling))
+      throw new IllegalArgumentException("Retrieval ceiling must be C0 to C2");
+    if (!Double.isFinite(minimum) || minimum < 0 || minimum > 1)
+      throw new IllegalArgumentException("Invalid similarity threshold");
+    this.telemetry = telemetry;
+    this.trust = trust;
+    this.repository = repository;
+    this.embeddings = embeddings;
+    this.minimumSimilarity = minimum;
+    allowed = List.of("C0", "C1", "C2").stream().filter(c -> c.compareTo(ceiling) <= 0).toList();
+  }
 
-    public List<String> allowedClassifications() {
-        return allowed;
-    }
+  private <T> T admitted(java.util.function.Supplier<T> operation) {
+    return operation.get();
+  }
 
-    public RetrievalResult retrieve(RetrievalRequest request) {
-        return retrieveWithin(request, allowed, null);
-    }
+  public String version(RetrievalRequest request, boolean scoped) {
+    int candidates = Math.min(100, Math.max(20, request.limit() * 4));
+    return (scoped ? "week28-scoped-v1:min=" : "week27-v1:min=")
+        + minimumSimilarity
+        + ":candidates="
+        + candidates
+        + ":rrf=60";
+  }
 
-    public RetrievalResult retrieveScoped(RetrievalRequest request, String ceiling, Set<String> sourceIds) {
-        Objects.requireNonNull(sourceIds, "case source scope");
-        if (!List.of("C0", "C1", "C2").contains(ceiling)) {
-            throw new IllegalArgumentException("Case clearance must be C0 to C2");
-        }
-        var intersection = allowed.stream().filter(value -> value.compareTo(ceiling) <= 0).toList();
-        return retrieveWithin(request, intersection, Set.copyOf(sourceIds));
-    }
+  public RetrievalResult degradedScoped(
+      RetrievalRequest request, String ceiling, Set<String> sourceIds) {
+    return admitted(
+        () -> {
+          var permitted = allowed.stream().filter(value -> value.compareTo(ceiling) <= 0).toList();
+          int corpus = repository.resolveCorpus(request.corpusVersion());
+          trust.requireTrusted(repository.eligibleScoped(corpus, permitted, sourceIds));
+          var passages = sourceIds.isEmpty()
+              ? List.<RetrievalResult.Passage>of()
+              : repository.keyword(corpus, request, permitted, request.limit(), sourceIds);
+          return new RetrievalResult(
+              corpus,
+              "degraded-lexical-v1",
+              "lexical-only",
+              false,
+              "LEXICAL_DEGRADED",
+              passages,
+              true,
+              "MODEL_UNAVAILABLE");
+        });
+  }
 
-    private RetrievalResult retrieveWithin(RetrievalRequest request, List<String> permitted, Set<String> sourceIds) {
-        int corpus = repository.resolveCorpus(request.corpusVersion());
-        if (sourceIds != null && sourceIds.isEmpty()) {
-            return new RetrievalResult(corpus, "week28-scoped-v1:empty", "not-invoked", embeddings.fixture(),
-                    request.selectedStrategy().name(), List.of());
-        }
-        String space = embeddings.spaceId();
-        repository.requireComplete(
-                corpus, request.docType(), RetrievalRepository.date(request), permitted, space, sourceIds);
-        float[] query = embeddings.embed(request.query());
-        repository.requireDimensions(space, query.length);
-        if (!space.equals(embeddings.spaceId()))
-            throw new IndexUnavailableException("Model changed during retrieval");
-        int candidates = Math.min(100, Math.max(20, request.limit() * 4));
-        var vector = repository.vector(
-                corpus, request, permitted, space, query, candidates, minimumSimilarity, sourceIds);
-        var passages = request.selectedStrategy() == RetrievalRequest.Strategy.VECTOR
-                ? vector.stream().limit(request.limit()).toList()
-                : ReciprocalRankFusion.merge(
-                        vector,
-                        repository.keyword(corpus, request, permitted, candidates, sourceIds),
-                        request.limit());
-        return new RetrievalResult(
-                corpus,
-                (sourceIds == null ? "week27-v1:min=" : "week28-scoped-v1:min=") + minimumSimilarity + ":candidates=" + candidates + ":rrf=60",
-                space,
-                embeddings.fixture(),
-                request.selectedStrategy().name(),
-                passages);
+  public RetrievalResult retrievePinned(
+      RetrievalRequest request,
+      String ceiling,
+      Set<String> sources,
+      com.fraudengine.platform.api.ReleaseEnvelope release) {
+    var selected = new RetrievalRequest(
+        request.query(),
+        release.corpusVersion(),
+        RetrievalRequest.Strategy.valueOf(release.retrievalStrategy()),
+        5,
+        request.docType(),
+        request.asOf());
+    var server = new RetrievalService(
+        repository,
+        embeddings.pinned(release.embeddingSpace()),
+        trust,
+        telemetry,
+        allowed.getLast(),
+        release.minimumSimilarity());
+    var result = server.retrieveScoped(selected, ceiling, sources);
+    if (!result.embeddingSpace().equals(release.embeddingSpace())
+        || !result.retrievalConfigVersion().equals(release.retrievalConfiguration()))
+      throw new IndexUnavailableException("Pinned retrieval configuration unavailable");
+    return result;
+  }
+
+  public List<String> allowedClassifications() {
+    return allowed;
+  }
+
+  public RetrievalResult retrieve(RetrievalRequest request) {
+    return admitted(() -> retrieveWithin(request, allowed, null));
+  }
+
+  public RetrievalResult retrieveScoped(
+      RetrievalRequest request, String ceiling, Set<String> sourceIds) {
+    Objects.requireNonNull(sourceIds, "case source scope");
+    if (!List.of("C0", "C1", "C2").contains(ceiling)) {
+      throw new IllegalArgumentException("Case clearance must be C0 to C2");
     }
+    var intersection = allowed.stream().filter(value -> value.compareTo(ceiling) <= 0).toList();
+    return admitted(() -> retrieveWithin(request, intersection, Set.copyOf(sourceIds)));
+  }
+
+  private RetrievalResult retrieveWithin(
+      RetrievalRequest request, List<String> permitted, Set<String> sourceIds) {
+    return telemetry == null
+        ? retrieveMeasured(request, permitted, sourceIds)
+        : telemetry.observe(
+            com.fraudengine.platform.api.OperationalTelemetry.Stage.RETRIEVAL,
+            () -> {
+              var result = retrieveMeasured(request, permitted, sourceIds);
+              telemetry.version(
+                  com.fraudengine.platform.api.OperationalTelemetry.Version.RETRIEVAL,
+                  result.retrievalConfigVersion());
+              return result;
+            });
+  }
+
+  private RetrievalResult retrieveMeasured(
+      RetrievalRequest request, List<String> permitted, Set<String> sourceIds) {
+    int corpus = repository.resolveCorpus(request.corpusVersion());
+    if (sourceIds != null && sourceIds.isEmpty()) {
+      return new RetrievalResult(
+          corpus,
+          "week28-scoped-v1:empty",
+          "not-invoked",
+          embeddings.fixture(),
+          request.selectedStrategy().name(),
+          List.of());
+    }
+    trust.requireTrusted(
+        sourceIds == null
+            ? repository.eligible(corpus, permitted)
+            : repository.eligibleScoped(corpus, permitted, sourceIds));
+    String space = embeddings.spaceId();
+    repository.requireComplete(
+        corpus, request.docType(), RetrievalRepository.date(request), permitted, space, sourceIds);
+    float[] query = embeddings.embed(request.query());
+    repository.requireDimensions(space, query.length);
+    if (!space.equals(embeddings.spaceId()))
+      throw new IndexUnavailableException("Model changed during retrieval");
+    int candidates = Math.min(100, Math.max(20, request.limit() * 4));
+    var vector = repository.vector(
+        corpus, request, permitted, space, query, candidates, minimumSimilarity, sourceIds);
+    var passages = request.selectedStrategy() == RetrievalRequest.Strategy.VECTOR
+        ? vector.stream().limit(request.limit()).toList()
+        : ReciprocalRankFusion.merge(
+            vector,
+            repository.keyword(corpus, request, permitted, candidates, sourceIds),
+            request.limit());
+    return new RetrievalResult(
+        corpus,
+        (sourceIds == null ? "week27-v1:min=" : "week28-scoped-v1:min=")
+            + minimumSimilarity
+            + ":candidates="
+            + candidates
+            + ":rrf=60",
+        space,
+        embeddings.fixture(),
+        request.selectedStrategy().name(),
+        passages);
+  }
 }
