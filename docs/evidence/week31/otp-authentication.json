@@ -1,0 +1,13 @@
+{
+  "passwordOnlyApprovalStatus" : 403,
+  "wrongOtpRejected" : true,
+  "otpChallenge" : true,
+  "_purpose" : "Real ephemeral Keycloak password/OTP and PKCE evidence; credentials omitted",
+  "simulatedFreezeCount" : 1,
+  "keycloak" : "26.8.1",
+  "disabledIdentityStatus" : 401,
+  "_file" : "docs/evidence/week31/otp-authentication.json",
+  "verifiedApprovalStatus" : 200,
+  "wrongIssuerStatus" : 401,
+  "wrongAudienceStatus" : 401
+}
