@@ -1,0 +1,15 @@
+# ============================================================================
+# FILE: src/main/resources/application-local-learning.yml
+# PURPOSE: Enable explicit loopback-only Basic compatibility for learning.
+# OWNER: Platform & Operations
+# SINCE: week-31
+# RELATED: docs/week31-implementation.md
+# NOTES: This profile shouldn't be combined with staging or prod.
+# ============================================================================
+engine:
+  security:
+    mode: basic
+
+knowledge:
+  trust:
+    required: false
