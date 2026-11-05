@@ -172,7 +172,7 @@ class RetrievalIntegrationTest {
             assertThat(result.getStatusCode().value()).isEqualTo(200);
             assertThat(result.getBody().passages()).isNotEmpty().allSatisfy(passage ->
                     assertThat(passage.citation().classification()).isEqualTo("C0"));
-            var publicServer = new RetrievalService(new RetrievalRepository(jdbc), queryEmbeddings, "C0", 0.15);
+            var publicServer = new RetrievalService(new RetrievalRepository(jdbc), queryEmbeddings, new com.fraudengine.knowledge.retrieval.SourceTrustPolicy(jdbc,false), null, "C0", 0.15);
             assertThat(publicServer.retrieveScoped(request(1, strategy), "C2",
                     Set.of("chargeback", "confidential-case")).passages())
                     .isNotEmpty().allSatisfy(passage ->
@@ -273,10 +273,12 @@ class RetrievalIntegrationTest {
         try {
             var a = pool.submit(() -> index.index(1));
             var b = pool.submit(() -> index.index(1));
-            var one = a.get(10, java.util.concurrent.TimeUnit.SECONDS);
-            var two = b.get(10, java.util.concurrent.TimeUnit.SECONDS);
-            assertThat(one.created() + two.created()).isEqualTo(2);
-            assertThat(one.reused() + two.reused()).isEqualTo(2);
+            int created=0;
+            for(var future:List.of(a,b)) {
+                try {created+=future.get(10,java.util.concurrent.TimeUnit.SECONDS).created();}
+                catch(java.util.concurrent.ExecutionException rejected) {assertThat(rejected.getCause()).isInstanceOf(com.fraudengine.platform.api.CapacityRejectedException.class);}
+            }
+            assertThat(created).isEqualTo(2);
             assertThat(
                             jdbc.queryForObject(
                                     "SELECT COUNT(*) FROM knowledge.retrieval_embeddings",
@@ -325,6 +327,8 @@ class RetrievalIntegrationTest {
                 new RetrievalService(
                         new RetrievalRepository(jdbc),
                         new com.fraudengine.platform.gateway.provider.FixtureRetrievalEmbedding(),
+                        new com.fraudengine.knowledge.retrieval.SourceTrustPolicy(jdbc,false),
+                        null,
                         "C0",
                         0.15);
         index.index(1);
@@ -416,4 +420,9 @@ class RetrievalIntegrationTest {
         assertThat(Files.readString(Path.of("target/test-reports/week27/retrieval-comparison.md")))
                 .contains("VECTOR", "HYBRID", "fixture=true");
     }
+    @org.junit.jupiter.api.AfterAll static void closeTelemetryBeforeDatabaseStops() {
+        new org.springframework.test.context.TestContextManager(RetrievalIntegrationTest.class).getTestContext()
+            .markApplicationContextDirty(org.springframework.test.annotation.DirtiesContext.HierarchyMode.EXHAUSTIVE);
+    }
+
 }

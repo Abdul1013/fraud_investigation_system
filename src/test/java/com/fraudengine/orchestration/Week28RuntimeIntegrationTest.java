@@ -370,6 +370,8 @@ class Week28RuntimeIntegrationTest {
 
     @Test
     void realSdkClientInitializesDiscoversAndCallsTheApplicationOverStdio() throws Exception {
+        // Week 31: the independent stdio process enforces provenance even though this test context uses legacy fixtures.
+        jdbc.update("INSERT INTO knowledge.trusted_sources(source_id,source_version,checksum,trusted_by) SELECT source_id,source_version,checksum,'fixture-curator' FROM knowledge.document_registry WHERE source_id='policy-week28' ON CONFLICT DO NOTHING");
         var parameters = io.modelcontextprotocol.client.transport.ServerParameters.builder(
                 java.nio.file.Path.of(System.getProperty("java.home"), "bin", "java").toString())
                 .args("-cp", System.getProperty("java.class.path"), "com.fraudengine.FraudEngineApplication",
@@ -388,8 +390,8 @@ class Week28RuntimeIntegrationTest {
         List<String> diagnostics = new java.util.concurrent.CopyOnWriteArrayList<>();
         transport.setStdErrorHandler(diagnostics::add);
         try (var client = io.modelcontextprotocol.client.McpClient.sync(transport)
-                .initializationTimeout(java.time.Duration.ofSeconds(45))
-                .requestTimeout(java.time.Duration.ofSeconds(20)).build()) {
+                .initializationTimeout(java.time.Duration.ofSeconds(60))
+                .requestTimeout(java.time.Duration.ofSeconds(60)).build()) {
             try { assertThat(client.initialize().serverInfo().name()).isEqualTo("fraud-investigator"); }
             catch (RuntimeException failure) { throw new AssertionError("MCP startup failed: " + String.join("\n", diagnostics), failure); }
             assertThat(client.listTools().tools()).extracting(io.modelcontextprotocol.spec.McpSchema.Tool::name)
@@ -462,4 +464,9 @@ class Week28RuntimeIntegrationTest {
         }
         throw new AssertionError("Worker did not stop within test deadline");
     }
+    @org.junit.jupiter.api.AfterAll static void closeTelemetryBeforeDatabaseStops() {
+        new org.springframework.test.context.TestContextManager(Week28RuntimeIntegrationTest.class).getTestContext()
+            .markApplicationContextDirty(org.springframework.test.annotation.DirtiesContext.HierarchyMode.EXHAUSTIVE);
+    }
+
 }

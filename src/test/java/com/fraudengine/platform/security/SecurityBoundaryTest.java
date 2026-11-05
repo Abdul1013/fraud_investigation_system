@@ -46,6 +46,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@org.springframework.test.context.ActiveProfiles("test")
 @WebMvcTest(IdentityController.class)
 @Import({SecurityConfig.class, SpringSecurityCurrentCaller.class, SecurityBoundaryTest.RouteProbes.class})
 class SecurityBoundaryTest {
