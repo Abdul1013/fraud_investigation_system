@@ -301,6 +301,18 @@ The simulator changes only synthetic database records. No account is created by 
 The [implementation plan](docs/week28-implementation-plan.md) and
 [proposed ADR-006](docs/adr/ADR-006-Authenticated-tool-boundaries.md) explain scope and decisions.
 
+## Week 29: durable investigation delivery
+
+The normal investigation engine now uses Temporal. Start its local persistent service
+with `docker compose --profile durable up -d`; select `INVESTIGATION_ENGINE=local`
+only for the explicit Week 28 compatibility runner. The agent model still requires
+explicit `INVESTIGATION_MODEL_PROVIDER=ollama`; no model or MFA fixture is silently used.
+
+[Plan](docs/week29-implementation-plan.md), [walkthrough and recovery runbook](docs/week29-implementation.md),
+and [verification](docs/evidence/week29/verification.md) explain the outbox, delegation,
+receipt and replay boundaries. Approval/execution remain human commands. The runtime
+step-up adapter remains denied until Week 31; recovery tests label their simulation.
+
 ## 8. AI usage and decision log
 
 Prompt log, AI-output verification notes, and human-decision evidence. This repository maintains a single running log at `ai/Ai_Decision_log.md`.
@@ -398,3 +410,45 @@ Skip Listener
 corpus
 
 application.yml
+
+## Week 30 — evaluation and prompt versions
+
+The evaluation harness scores 30 labelled questions through the case-scoped answer API. Prompts are digest-checked and pinned to durable investigations. See [the walkthrough](docs/week30-implementation.md) and [measured reports](docs/evidence/week30/).
+
+```bash
+mvn -q -Dtest=EvalGateTest,EvaluationIntegrationTest test
+# Requires local Ollama with embeddinggemma and qwen2.5:1.5b installed:
+mvn -q -Deval.native=true -Dtest=EvaluationIntegrationTest test
+```
+
+Fixture checks cannot pass the semantic gate. Both actual embedding strategies passed the fixed thresholds; one relevance failure and two prompt-A tool rejections remain documented. Human review and the GitHub required-check setting are pending. No commit or tag has been created automatically.
+
+## Week 31 — verified identity and source trust
+
+The default API mode now validates OIDC bearer tokens. The explicit `local-learning` profile retains Basic plus CSRF and cannot approve with simulated MFA. Staging/prod reject Basic and require HTTPS identity plus reviewed source provenance.
+
+Provision local Keycloak administrator credentials outside Git, then start `docker compose --profile identity up -d keycloak`. Enroll a user with password and OTP in the imported realm, link its verified issuer/subject to an application subject in `platform.identity_links`, and grant cases separately. The public PKCE learning client is `/auth/index.html`. Never commit passwords, OTP seeds or tokens.
+
+Sources must be explicitly trusted by a curator through `/v1/knowledge/source-trust` with the exact imported source/version/checksum before indexing or retrieval. The local-learning/test profiles can exercise the older synthetic corpus without trust enforcement; deployment profiles prohibit that exception.
+
+See [the walkthrough](docs/week31-implementation.md), [threat model](docs/security/week31-threat-model.md), and [authentication evidence](docs/evidence/week31/otp-authentication.json). Focused real OTP and abuse tests passed; full regression/review status is in [verification.json](docs/evidence/week31/verification.json).
+
+## Week 32 — operational visibility
+
+Start the private local monitoring stack with `docker compose -f observability/compose.yml up -d`. Run the application with the `observability` profile in addition to your identity/learning profile. Metrics and traces are pushed to the collector; no public API metrics endpoint is added.
+
+Local views: Grafana `http://localhost:3000`, Prometheus `http://localhost:9090`, Tempo `http://localhost:3200`. Ports bind loopback; Grafana is a local read-only learning viewer. See [the walkthrough](docs/week32-implementation.md) and [troubleshooting](observability/runbooks/week32-troubleshooting.md).
+
+The optional `-Dops.demo=true` test run requires this stack and the installed local Qwen model. It measures actual provider usage separately from fixture workflow and HTTP-failure demonstrations. Reports retain local compute-rate assumptions and do not claim free inference or long-window SLO compliance. Technical checks passed: 104 regression tests, four optional skips, plus separate actual operational demonstrations. Human review is pending.
+
+## Week 33 — measured bounded reads
+
+Run `mvn -q verify` with Docker, then follow [the Week 33 review commands](docs/evidence/week33/review-commands.md) for the fixed k6 workloads. Native runs need Ollama and the recorded embedding model; fixture runs verify infrastructure only. [The walkthrough](docs/week33-implementation.md) defends cache scope, rate/concurrency limits, batching, degraded reads and progress streaming. Reports live in `docs/evidence/week33/`; exact files are in its commit manifest. Warm-query results are not production capacity estimates. Human review and submission remain pending. No automated commit, tag or deployment.
+
+## Week 34 — controlled staging preparation
+
+[The walkthrough](docs/week34-implementation.md) explains immutable AI releases, early Spring deployment guards, non-root API/worker roles, separate owner/migration jobs and private ECS staging. [The review commands](docs/evidence/week34/review-commands.md) cover clean reconstruction and local/native checks; [the release runbook](docs/evidence/week34/release-runbook.md) covers operator prerequisites, migration-first release, rollback and teardown.
+
+The prepared target is eu-west-1 with local Ollama sidecars. [The cost proposal](docs/evidence/week34/aws-deployment-proposal.md) estimates about $377/month with a $400 planning budget, not a cap. AWS account/domain/cost approval, live rollout/URL and the two-week operational exercise remain pending. [The Kubernetes learning example](infra/k8s/README.md) teaches core resources separately; AWS uses ECS. Exact commit coverage is in the Week 34 evidence manifest. Human review remains pending; no automatic Git or cloud deployment.
+
+Weekly review starts with the [delivery index](docs/weekly-delivery-index.md). Week 34 final image checks and full regression currently await Docker storage recovery; focused clean-source checks and native host evidence are recorded separately.

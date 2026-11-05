@@ -1,0 +1,22 @@
+<!--
+FILE: src/main/resources/static/auth/index.html
+PURPOSE: Minimal same-origin browser authorization-code PKCE learning client.
+OWNER: Platform & Operations
+SINCE: week-31
+RELATED: client.js
+NOTES: Tokens remain in memory and are never rendered or stored in browser persistence.
+-->
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><title>Fraud learning sign-in</title>
+  <h1>Fraud investigation sign-in</h1>
+  <p>
+    Sign in with your enrolled Keycloak identity. Approval requires a fresh
+    password and OTP challenge.
+  </p>
+  <button id="login">Sign in</button
+  ><button id="stepup">Fresh approval authentication</button
+  ><button id="forget">Forget local session</button>
+  <pre id="status" aria-live="polite">Signed out</pre>
+  <script src="/auth/client.js" defer></script>
+</html>

@@ -1,0 +1,50 @@
+{
+  "_file": "docs/evidence/week31/verification.json",
+  "_purpose": "Executed security checks with pending full-suite status explicit",
+  "humanReview": "pending review",
+  "status": "technical checks passed; human review pending",
+  "focused": {
+    "tests": 5,
+    "passed": 5,
+    "failures": 0,
+    "errors": 0
+  },
+  "realIdentity": "actual Keycloak PKCE/password/OTP; no mocked StepUpVerifier",
+  "providerPrivacy": "real loopback HTTP capture against a protocol fixture, not a native model",
+  "sourceTrust": "real PostgreSQL and HTTP authorization, fixture embedding spy",
+  "claimMatrix": "unit claim fixtures; genuine OTP evidence is separate",
+  "cloud": "not deployed",
+  "fullRegression": {
+    "tests": 105,
+    "passed": 102,
+    "skipped": 3,
+    "failures": 0,
+    "errors": 0,
+    "command": "mvn -q clean verify",
+    "source": "isolated development source copy"
+  },
+  "dependencies": {
+    "springBoot": "3.5.7",
+    "springSecurity": "6.5.6 (Boot-managed)",
+    "keycloak": "26.8.1",
+    "keycloakDigest": "sha256:a78d6b79572168cb25886b80a8b5b8d4ed4390743e3eecb810538683e209dd6b"
+  },
+  "previousFailures": [
+    "Test browser needed localhost Secure-cookie semantics",
+    "OTP fixture needed explicit BASE32 encoding",
+    "IDE incremental classes interfered with root Maven target; isolated verification used",
+    "MCP fixture needed explicit curator trust for its synthetic source"
+  ],
+  "cleanReconstruction": {
+    "patchApplication": "passed; sequential byte reconstruction verified",
+    "fullRegression": {
+      "tests": 105,
+      "passed": 102,
+      "skipped": 3,
+      "failures": 0,
+      "errors": 0,
+      "command": "mvn -q clean verify",
+      "source": "week-31-source reconstructed from sequential patch"
+    }
+  }
+}
