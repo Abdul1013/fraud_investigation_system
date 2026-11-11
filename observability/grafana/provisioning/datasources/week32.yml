@@ -1,0 +1,21 @@
+# FILE: observability/grafana/provisioning/datasources/week32.yml
+# PURPOSE: Provision local read-only metrics and trace sources without credentials.
+# OWNER: Platform & Operations
+# SINCE: week-32
+# RELATED: observability/compose.yml
+# NOTES: Local viewer access only; staging requires a separate identity/access policy.
+apiVersion: 1
+datasources:
+  - name: Fraud metrics
+    uid: fraud-prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+  - name: Fraud traces
+    uid: fraud-tempo
+    type: tempo
+    access: proxy
+    url: http://tempo:3200
+    editable: false

@@ -1,0 +1,12 @@
+# FILE: observability/grafana/provisioning/dashboards/week32.yml
+# PURPOSE: Provision the checked-in operational learning dashboard.
+# OWNER: Platform & Operations
+# SINCE: week-32
+# RELATED: observability/grafana/dashboards/week32.json
+# NOTES: Dashboard presence alone is not operational evidence.
+apiVersion: 1
+providers:
+  - name: Fraud operations
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards
