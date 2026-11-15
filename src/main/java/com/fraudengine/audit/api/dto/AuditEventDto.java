@@ -18,4 +18,6 @@ package com.fraudengine.audit.api.dto;
 
 import java.time.Instant;
 
-public record AuditEventDto(long sequence, Instant occurredAt, String subject, String type, String referenceId) {}
+public record AuditEventDto(long sequence, Instant occurredAt, String subject, String type, String referenceId,String traceId) {
+    public AuditEventDto(long sequence,Instant occurredAt,String subject,String type,String referenceId) {this(sequence,occurredAt,subject,type,referenceId,null);}
+}

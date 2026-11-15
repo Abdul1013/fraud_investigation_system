@@ -112,7 +112,8 @@ public class DecisionService implements DecisionApi {
             || !release.embeddingSpace().equals(evidence.embeddingSpace())
             || !release.retrievalConfiguration().equals(evidence.retrievalConfigVersion())
             || !release.retrievalStrategy().equals(evidence.strategy())
-            || evidence.degraded())) throw new AccessDeniedException();
+            || evidence.degraded()))
+      throw new AccessDeniedException();
     return proposeBinding(
         operationKey,
         caseId,
@@ -146,7 +147,8 @@ public class DecisionService implements DecisionApi {
     if (promptReference == null || promptReference.isBlank() || promptReference.length() > 300)
       throw new IllegalArgumentException("Invalid prompt reference");
     if (!java.util.Set.of("week28-investigator-v1", "mcp-client:prompt-unspecified")
-        .contains(promptReference)) promptCatalog.byReference(promptReference);
+        .contains(promptReference))
+      promptCatalog.byReference(promptReference);
     if (operationKey != null && (operationKey.isBlank() || operationKey.length() > 150))
       throw new IllegalArgumentException("Invalid operation key");
     var caller = require(Permission.PROPOSE_ACTION);
@@ -160,34 +162,31 @@ public class DecisionService implements DecisionApi {
       throw new IllegalArgumentException("Invalid proposal description or model version");
     }
     knowledge.validateCaseEvidence(caseId, evidence);
-    var binding =
-        new Binding(
-            "binding-v1",
-            caseId,
-            "SIMULATED_ACCOUNT_FREEZE",
-            "simulated:" + caseId,
-            Map.of("frozen", true),
-            rationale,
-            evidence,
-            modelVersion,
-            promptReference,
-            1,
-            release);
+    var binding = new Binding(
+        "binding-v1",
+        caseId,
+        "SIMULATED_ACCOUNT_FREEZE",
+        "simulated:" + caseId,
+        Map.of("frozen", true),
+        rationale,
+        evidence,
+        modelVersion,
+        promptReference,
+        1,
+        release);
     String json = json(binding), digest = hash(json);
-    UUID id =
-        UUID.nameUUIDFromBytes((caller.subject() + ":" + digest).getBytes(StandardCharsets.UTF_8));
-    int inserted =
-        jdbc.update(
-            """
+    UUID id = UUID.nameUUIDFromBytes((caller.subject() + ":" + digest).getBytes(StandardCharsets.UTF_8));
+    int inserted = jdbc.update(
+        """
             INSERT INTO decision.recommendations(id,case_id,proposer,rationale,binding_json,binding_digest,state)
             VALUES (?,?,?,?,?,?,'PENDING_APPROVAL') ON CONFLICT DO NOTHING
             """,
-            id,
-            caseId,
-            caller.subject(),
-            rationale,
-            json,
-            digest);
+        id,
+        caseId,
+        caller.subject(),
+        rationale,
+        json,
+        digest);
     if (operationKey != null) {
       jdbc.update(
           "INSERT INTO decision.proposal_operations VALUES (?,?,?,?) ON CONFLICT DO NOTHING",
@@ -195,12 +194,11 @@ public class DecisionService implements DecisionApi {
           operationKey,
           digest,
           id);
-      var operation =
-          jdbc.queryForMap(
-              "SELECT binding_digest,recommendation_id FROM decision.proposal_operations WHERE"
-                  + " subject=? AND operation_key=?",
-              caller.subject(),
-              operationKey);
+      var operation = jdbc.queryForMap(
+          "SELECT binding_digest,recommendation_id FROM decision.proposal_operations WHERE"
+              + " subject=? AND operation_key=?",
+          caller.subject(),
+          operationKey);
       if (!digest.equals(operation.get("binding_digest")))
         throw new IllegalStateException("Operation key conflict");
       id = (UUID) operation.get("recommendation_id");
@@ -245,10 +243,9 @@ public class DecisionService implements DecisionApi {
     observeVersions(row);
     try {
       stepUp.requireVerified(caller.subject());
-      boolean expiredApproval =
-          "APPROVED".equals(row.state())
-              && row.expiresAt() != null
-              && !row.expiresAt().isAfter(Instant.now());
+      boolean expiredApproval = "APPROVED".equals(row.state())
+          && row.expiresAt() != null
+          && !row.expiresAt().isAfter(Instant.now());
       if ((!"PENDING_APPROVAL".equals(row.state()) && !expiredApproval)
           || caller.subject().equals(row.proposer())) {
         throw new AccessDeniedException();
@@ -261,9 +258,9 @@ public class DecisionService implements DecisionApi {
     var signed = tokens.issue(id, row.digest(), caller.subject());
     jdbc.update(
         """
-        UPDATE decision.recommendations SET state='APPROVED',version=version+1,
-        approval_id=?,approver=?,expires_at=? WHERE id=?
-        """,
+            UPDATE decision.recommendations SET state='APPROVED',version=version+1,
+            approval_id=?,approver=?,expires_at=? WHERE id=?
+            """,
         signed.id(),
         caller.subject(),
         java.sql.Timestamp.from(signed.expiresAt()),
@@ -301,12 +298,12 @@ public class DecisionService implements DecisionApi {
   }
 
   private String recommendationParent(UUID id) {
-    var values =
-        jdbc.query(
-            "SELECT trace_parent FROM decision.recommendations WHERE id=?",
-            (row, n) -> row.getString(1),
-            id);
-    if (values.isEmpty()) throw new AccessDeniedException();
+    var values = jdbc.query(
+        "SELECT trace_parent FROM decision.recommendations WHERE id=?",
+        (row, n) -> row.getString(1),
+        id);
+    if (values.isEmpty())
+      throw new AccessDeniedException();
     return values.getFirst();
   }
 
@@ -318,13 +315,12 @@ public class DecisionService implements DecisionApi {
     requireCase(row.caseId());
     observeVersions(row);
     String requestDigest = hash(id + ":" + token);
-    var existing =
-        jdbc.query(
-            "SELECT request_digest,result_json FROM decision.execution_results"
-                + " WHERE subject=? AND idempotency_key=?",
-            (rs, n) -> Map.entry(rs.getString(1), rs.getString(2)),
-            caller.subject(),
-            key);
+    var existing = jdbc.query(
+        "SELECT request_digest,result_json FROM decision.execution_results"
+            + " WHERE subject=? AND idempotency_key=?",
+        (rs, n) -> Map.entry(rs.getString(1), rs.getString(2)),
+        caller.subject(),
+        key);
     if (!existing.isEmpty()) {
       if (!existing.getFirst().getKey().equals(requestDigest))
         throw new IllegalStateException("Idempotency key conflict");
@@ -373,14 +369,16 @@ public class DecisionService implements DecisionApi {
   }
 
   private void requireCase(String caseId) {
-    // Recommendation rationale and approval metadata are C2 even when source evidence is public.
+    // Recommendation rationale and approval metadata are C2 even when source
+    // evidence is public.
     if (!"C2".equals(cases.evidenceScope(caseId).classificationCeiling()))
       throw new AccessDeniedException();
   }
 
   private CallerContext require(Permission permission) {
     var caller = identity.requireAuthenticated();
-    if (!caller.hasPermission(permission)) throw new AccessDeniedException();
+    if (!caller.hasPermission(permission))
+      throw new AccessDeniedException();
     return caller;
   }
 
@@ -388,19 +386,18 @@ public class DecisionService implements DecisionApi {
     return jdbc
         .query(
             "SELECT * FROM decision.recommendations WHERE id=? FOR UPDATE",
-            (rs, n) ->
-                new Row(
-                    rs.getObject("id", UUID.class),
-                    rs.getString("case_id"),
-                    rs.getString("proposer"),
-                    rs.getString("binding_json"),
-                    rs.getString("binding_digest"),
-                    rs.getString("state"),
-                    rs.getObject("approval_id", UUID.class),
-                    rs.getString("approver"),
-                    rs.getTimestamp("expires_at") == null
-                        ? null
-                        : rs.getTimestamp("expires_at").toInstant()),
+            (rs, n) -> new Row(
+                rs.getObject("id", UUID.class),
+                rs.getString("case_id"),
+                rs.getString("proposer"),
+                rs.getString("binding_json"),
+                rs.getString("binding_digest"),
+                rs.getString("state"),
+                rs.getObject("approval_id", UUID.class),
+                rs.getString("approver"),
+                rs.getTimestamp("expires_at") == null
+                    ? null
+                    : rs.getTimestamp("expires_at").toInstant()),
             id)
         .stream()
         .findFirst()
@@ -458,7 +455,8 @@ public class DecisionService implements DecisionApi {
       String state,
       UUID approvalId,
       String approver,
-      Instant expiresAt) {}
+      Instant expiresAt) {
+  }
 
   private record Binding(
       String bindingVersion,
@@ -471,7 +469,6 @@ public class DecisionService implements DecisionApi {
       String modelVersion,
       String promptVersion,
       int recommendationVersion,
-      @com.fasterxml.jackson.annotation.JsonInclude(
-              com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
-          ReleaseEnvelope release) {}
+      @com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL) ReleaseEnvelope release) {
+  }
 }

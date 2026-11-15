@@ -25,16 +25,26 @@ import org.springframework.stereotype.Service;
 public class DecisionOutcomeDelivery implements DecisionOutcomes {
     private final JdbcTemplate jdbc;
     private final com.fraudengine.platform.api.OperationalTelemetry telemetry;
-    public DecisionOutcomeDelivery(JdbcTemplate jdbc,com.fraudengine.platform.api.OperationalTelemetry telemetry) {this.telemetry=telemetry;this.jdbc=jdbc;}
-    @Override public List<Outcome> pending(int limit) {
-        telemetry.backlog(com.fraudengine.platform.api.OperationalTelemetry.Queue.DECISION,jdbc.queryForObject("SELECT count(*) FROM decision.outcome_outbox WHERE delivered_at IS NULL",Long.class));
-        if(limit<1||limit>100)throw new IllegalArgumentException("Invalid outbox batch");
-        return jdbc.query("SELECT o.sequence,o.recommendation_id,o.state,min(p.operation_key) operation_key"
-                +" FROM decision.outcome_outbox o LEFT JOIN decision.proposal_operations p ON p.recommendation_id=o.recommendation_id"
-                +" WHERE o.delivered_at IS NULL GROUP BY o.sequence,o.recommendation_id,o.state ORDER BY o.sequence LIMIT ?",
-                (r,n)->new Outcome(r.getLong(1),r.getObject(2,UUID.class),r.getString(3),r.getString(4)),limit);
+
+    public DecisionOutcomeDelivery(JdbcTemplate jdbc, com.fraudengine.platform.api.OperationalTelemetry telemetry) {
+        this.telemetry = telemetry;
+        this.jdbc = jdbc;
     }
-    @Override public void delivered(long id) {
-        jdbc.update("UPDATE decision.outcome_outbox SET delivered_at=now() WHERE sequence=?",id);
+
+    @Override
+    public List<Outcome> pending(int limit) {
+        telemetry.backlog(com.fraudengine.platform.api.OperationalTelemetry.Queue.DECISION, jdbc
+                .queryForObject("SELECT count(*) FROM decision.outcome_outbox WHERE delivered_at IS NULL", Long.class));
+        if (limit < 1 || limit > 100)
+            throw new IllegalArgumentException("Invalid outbox batch");
+        return jdbc.query("SELECT o.sequence,o.recommendation_id,o.state,min(p.operation_key) operation_key"
+                + " FROM decision.outcome_outbox o LEFT JOIN decision.proposal_operations p ON p.recommendation_id=o.recommendation_id"
+                + " WHERE o.delivered_at IS NULL GROUP BY o.sequence,o.recommendation_id,o.state ORDER BY o.sequence LIMIT ?",
+                (r, n) -> new Outcome(r.getLong(1), r.getObject(2, UUID.class), r.getString(3), r.getString(4)), limit);
+    }
+
+    @Override
+    public void delivered(long id) {
+        jdbc.update("UPDATE decision.outcome_outbox SET delivered_at=now() WHERE sequence=?", id);
     }
 }
