@@ -1,0 +1,616 @@
+{
+  "_file": "docs/evidence/week32/tempo-trace.json",
+  "_purpose": "Actual collector-sanitized Tempo spans matched to the action audit trace ID",
+  "report": {
+    "batches": [
+      {
+        "resource": {
+          "attributes": [
+            {
+              "key": "service.name",
+              "value": {
+                "stringValue": "fraud-investigation-engine"
+              }
+            }
+          ]
+        },
+        "scopeSpans": [
+          {
+            "scope": {
+              "name": "org.springframework.boot",
+              "version": "3.5.7"
+            },
+            "spans": [
+              {
+                "traceId": "M0lFddLvsr8X/e/GZYQYxg==",
+                "spanId": "goA2FtuE0SU=",
+                "name": "http post",
+                "kind": "SPAN_KIND_CLIENT",
+                "startTimeUnixNano": "1793035126597700000",
+                "endTimeUnixNano": "1793035126819880334",
+                "status": {
+                  "code": "STATUS_CODE_OK"
+                }
+              },
+              {
+                "traceId": "M0lFddLvsr8X/e/GZYQYxg==",
+                "spanId": "cnTHDQ8SiHI=",
+                "parentSpanId": "goA2FtuE0SU=",
+                "name": "http post /v1/investigations",
+                "kind": "SPAN_KIND_SERVER",
+                "startTimeUnixNano": "1793035126602728000",
+                "endTimeUnixNano": "1793035126817057458",
+                "status": {}
+              },
+              {
+                "traceId": "M0lFddLvsr8X/e/GZYQYxg==",
+                "spanId": "xue5F4rse2c=",
+                "parentSpanId": "cnTHDQ8SiHI=",
+                "name": "security filterchain before",
+                "kind": "SPAN_KIND_INTERNAL",
+                "startTimeUnixNano": "1793035126603104458",
+                "endTimeUnixNano": "1793035126741753917",
+                "events": [
+                  {
+                    "timeUnixNano": "1793035126603000000",
+                    "name": "before BasicAuthenticationFilter"
+                  },
+                  {
+                    "timeUnixNano": "1793035126603000000",
+                    "name": "before CsrfFilter"
+                  },
+                  {
+                    "timeUnixNano": "1793035126603000000",
+                    "name": "before DisableEncodeUrlFilter"
+                  },
+                  {
+                    "timeUnixNano": "1793035126603000000",
+                    "name": "before HeaderWriterFilter"
+                  },
+                  {
+                    "timeUnixNano": "1793035126603000000",
+                    "name": "before SecurityContextHolderFilter"
+                  },
+                  {
+                    "timeUnixNano": "1793035126603000000",
+                    "name": "before WebAsyncManagerIntegrationFilter"
+                  },
+                  {
+                    "timeUnixNano": "1793035126740000000",
+                    "name": "before AnonymousAuthenticationFilter"
+                  },
+                  {
+                    "timeUnixNano": "1793035126740000000",
+                    "name": "before AuthorizationFilter"
+                  },
+                  {
+                    "timeUnixNano": "1793035126740000000",
+                    "name": "before ExceptionTranslationFilter"
+                  },
+                  {
+                    "timeUnixNano": "1793035126740000000",
+                    "name": "before SecurityContextHolderAwareRequestFilter"
+                  }
+                ],
+                "status": {
+                  "code": "STATUS_CODE_OK"
+                }
+              },
+              {
+                "traceId": "M0lFddLvsr8X/e/GZYQYxg==",
+                "spanId": "z9HA5W690YU=",
+                "parentSpanId": "xue5F4rse2c=",
+                "name": "authenticate usernamepassword",
+                "kind": "SPAN_KIND_INTERNAL",
+                "startTimeUnixNano": "1793035126603475333",
+                "endTimeUnixNano": "1793035126740246417",
+                "status": {
+                  "code": "STATUS_CODE_OK"
+                }
+              },
+              {
+                "traceId": "M0lFddLvsr8X/e/GZYQYxg==",
+                "spanId": "avm9gwrSajc=",
+                "parentSpanId": "xue5F4rse2c=",
+                "name": "authorize request",
+                "kind": "SPAN_KIND_INTERNAL",
+                "startTimeUnixNano": "1793035126740624875",
+                "endTimeUnixNano": "1793035126741410292",
+                "status": {
+                  "code": "STATUS_CODE_OK"
+                }
+              },
+              {
+                "traceId": "M0lFddLvsr8X/e/GZYQYxg==",
+                "spanId": "wQmekF02Q40=",
+                "parentSpanId": "cnTHDQ8SiHI=",
+                "name": "secured request",
+                "kind": "SPAN_KIND_INTERNAL",
+                "startTimeUnixNano": "1793035126741830667",
+                "endTimeUnixNano": "1793035126816146625",
+                "status": {
+                  "code": "STATUS_CODE_OK"
+                }
+              },
+              {
+                "traceId": "M0lFddLvsr8X/e/GZYQYxg==",
+                "spanId": "YCcXAc4RRqc=",
+                "parentSpanId": "cnTHDQ8SiHI=",
+                "name": "security filterchain after",
+                "kind": "SPAN_KIND_INTERNAL",
+                "startTimeUnixNano": "1793035126816222125",
+                "endTimeUnixNano": "1793035126816731500",
+                "events": [
+                  {
+                    "timeUnixNano": "1793035126816000000",
+                    "name": "after AnonymousAuthenticationFilter"
+                  },
+                  {
+                    "timeUnixNano": "1793035126816000000",
+                    "name": "after AuthorizationFilter"
+                  },
+                  {
+                    "timeUnixNano": "1793035126816000000",
+                    "name": "after BasicAuthenticationFilter"
+                  },
+                  {
+                    "timeUnixNano": "1793035126816000000",
+                    "name": "after CsrfFilter"
+                  },
+                  {
+                    "timeUnixNano": "1793035126816000000",
+                    "name": "after DisableEncodeUrlFilter"
+                  },
+                  {
+                    "timeUnixNano": "1793035126816000000",
+                    "name": "after ExceptionTranslationFilter"
+                  },
+                  {
+                    "timeUnixNano": "1793035126816000000",
+                    "name": "after HeaderWriterFilter"
+                  },
+                  {
+                    "timeUnixNano": "1793035126816000000",
+                    "name": "after SecurityContextHolderAwareRequestFilter"
+                  },
+                  {
+                    "timeUnixNano": "1793035126816000000",
+                    "name": "after SecurityContextHolderFilter"
+                  },
+                  {
+                    "timeUnixNano": "1793035126816000000",
+                    "name": "after WebAsyncManagerIntegrationFilter"
+                  }
+                ],
+                "status": {
+                  "code": "STATUS_CODE_OK"
+                }
+              }
+            ]
+          },
+          {
+            "scope": {
+              "name": "fraud.lifecycle"
+            },
+            "spans": [
+              {
+                "traceId": "M0lFddLvsr8X/e/GZYQYxg==",
+                "spanId": "pxUjdkTdAmQ=",
+                "parentSpanId": "wQmekF02Q40=",
+                "name": "fraud.outbox",
+                "kind": "SPAN_KIND_INTERNAL",
+                "startTimeUnixNano": "1793035126873933000",
+                "endTimeUnixNano": "1793035127066680916",
+                "attributes": [
+                  {
+                    "key": "fraud.outcome",
+                    "value": {
+                      "stringValue": "success"
+                    }
+                  },
+                  {
+                    "key": "fraud.release",
+                    "value": {
+                      "stringValue": "week32-v1"
+                    }
+                  }
+                ],
+                "links": [
+                  {
+                    "traceId": "FaXh5YzbU5XMYcr3um3t3Q==",
+                    "spanId": "QDkrkPHQIBA="
+                  }
+                ],
+                "status": {}
+              },
+              {
+                "traceId": "M0lFddLvsr8X/e/GZYQYxg==",
+                "spanId": "FXBzYWxR/sQ=",
+                "parentSpanId": "wQmekF02Q40=",
+                "name": "fraud.activity",
+                "kind": "SPAN_KIND_INTERNAL",
+                "startTimeUnixNano": "1793035127654356000",
+                "endTimeUnixNano": "1793035127703877000",
+                "attributes": [
+                  {
+                    "key": "fraud.outcome",
+                    "value": {
+                      "stringValue": "success"
+                    }
+                  },
+                  {
+                    "key": "fraud.release",
+                    "value": {
+                      "stringValue": "week32-v1"
+                    }
+                  }
+                ],
+                "status": {}
+              },
+              {
+                "traceId": "M0lFddLvsr8X/e/GZYQYxg==",
+                "spanId": "LDsMFa56GBg=",
+                "parentSpanId": "FXBzYWxR/sQ=",
+                "name": "fraud.model",
+                "kind": "SPAN_KIND_INTERNAL",
+                "startTimeUnixNano": "1793035127672012875",
+                "endTimeUnixNano": "1793035127674196791",
+                "attributes": [
+                  {
+                    "key": "fraud.model.version",
+                    "value": {
+                      "stringValue": "unknown"
+                    }
+                  },
+                  {
+                    "key": "fraud.outcome",
+                    "value": {
+                      "stringValue": "success"
+                    }
+                  },
+                  {
+                    "key": "fraud.prompt.version",
+                    "value": {
+                      "stringValue": "investigator-v1@20407ba592d39ea95f2f1f8be5f34786824781931a83504b42c7653d362a6cc0"
+                    }
+                  },
+                  {
+                    "key": "fraud.release",
+                    "value": {
+                      "stringValue": "week32-v1"
+                    }
+                  }
+                ],
+                "status": {}
+              },
+              {
+                "traceId": "M0lFddLvsr8X/e/GZYQYxg==",
+                "spanId": "A5OpneDDfwY=",
+                "parentSpanId": "FXBzYWxR/sQ=",
+                "name": "fraud.tool",
+                "kind": "SPAN_KIND_INTERNAL",
+                "startTimeUnixNano": "1793035127687224625",
+                "endTimeUnixNano": "1793035127691994708",
+                "attributes": [
+                  {
+                    "key": "fraud.outcome",
+                    "value": {
+                      "stringValue": "success"
+                    }
+                  },
+                  {
+                    "key": "fraud.release",
+                    "value": {
+                      "stringValue": "week32-v1"
+                    }
+                  }
+                ],
+                "status": {}
+              },
+              {
+                "traceId": "M0lFddLvsr8X/e/GZYQYxg==",
+                "spanId": "gVjJFgoAy9Q=",
+                "parentSpanId": "wQmekF02Q40=",
+                "name": "fraud.activity",
+                "kind": "SPAN_KIND_INTERNAL",
+                "startTimeUnixNano": "1793035127762056000",
+                "endTimeUnixNano": "1793035127833849417",
+                "attributes": [
+                  {
+                    "key": "fraud.outcome",
+                    "value": {
+                      "stringValue": "success"
+                    }
+                  },
+                  {
+                    "key": "fraud.release",
+                    "value": {
+                      "stringValue": "week32-v1"
+                    }
+                  }
+                ],
+                "status": {}
+              },
+              {
+                "traceId": "M0lFddLvsr8X/e/GZYQYxg==",
+                "spanId": "CfNagDH2UJc=",
+                "parentSpanId": "gVjJFgoAy9Q=",
+                "name": "fraud.model",
+                "kind": "SPAN_KIND_INTERNAL",
+                "startTimeUnixNano": "1793035127771281292",
+                "endTimeUnixNano": "1793035127771687417",
+                "attributes": [
+                  {
+                    "key": "fraud.model.version",
+                    "value": {
+                      "stringValue": "unknown"
+                    }
+                  },
+                  {
+                    "key": "fraud.outcome",
+                    "value": {
+                      "stringValue": "success"
+                    }
+                  },
+                  {
+                    "key": "fraud.prompt.version",
+                    "value": {
+                      "stringValue": "investigator-v1@20407ba592d39ea95f2f1f8be5f34786824781931a83504b42c7653d362a6cc0"
+                    }
+                  },
+                  {
+                    "key": "fraud.release",
+                    "value": {
+                      "stringValue": "week32-v1"
+                    }
+                  }
+                ],
+                "status": {}
+              },
+              {
+                "traceId": "M0lFddLvsr8X/e/GZYQYxg==",
+                "spanId": "X2ufWWB+2nY=",
+                "parentSpanId": "gVjJFgoAy9Q=",
+                "name": "fraud.tool",
+                "kind": "SPAN_KIND_INTERNAL",
+                "startTimeUnixNano": "1793035127773180084",
+                "endTimeUnixNano": "1793035127825166292",
+                "attributes": [
+                  {
+                    "key": "fraud.outcome",
+                    "value": {
+                      "stringValue": "success"
+                    }
+                  },
+                  {
+                    "key": "fraud.release",
+                    "value": {
+                      "stringValue": "week32-v1"
+                    }
+                  }
+                ],
+                "status": {}
+              },
+              {
+                "traceId": "M0lFddLvsr8X/e/GZYQYxg==",
+                "spanId": "ROeRI8Kv45s=",
+                "parentSpanId": "X2ufWWB+2nY=",
+                "name": "fraud.retrieval",
+                "kind": "SPAN_KIND_INTERNAL",
+                "startTimeUnixNano": "1793035127789088875",
+                "endTimeUnixNano": "1793035127807093750",
+                "attributes": [
+                  {
+                    "key": "fraud.outcome",
+                    "value": {
+                      "stringValue": "success"
+                    }
+                  },
+                  {
+                    "key": "fraud.release",
+                    "value": {
+                      "stringValue": "week32-v1"
+                    }
+                  },
+                  {
+                    "key": "fraud.retrieval.version",
+                    "value": {
+                      "stringValue": "week28-scoped-v1"
+                    }
+                  }
+                ],
+                "status": {}
+              },
+              {
+                "traceId": "M0lFddLvsr8X/e/GZYQYxg==",
+                "spanId": "hnsy+Z3WOKc=",
+                "parentSpanId": "wQmekF02Q40=",
+                "name": "fraud.outbox",
+                "kind": "SPAN_KIND_INTERNAL",
+                "startTimeUnixNano": "1793035131237190000",
+                "endTimeUnixNano": "1793035131285890875",
+                "attributes": [
+                  {
+                    "key": "fraud.outcome",
+                    "value": {
+                      "stringValue": "success"
+                    }
+                  },
+                  {
+                    "key": "fraud.release",
+                    "value": {
+                      "stringValue": "week32-v1"
+                    }
+                  }
+                ],
+                "status": {}
+              },
+              {
+                "traceId": "M0lFddLvsr8X/e/GZYQYxg==",
+                "spanId": "cHwUwcHEb9M=",
+                "parentSpanId": "X2ufWWB+2nY=",
+                "name": "fraud.approval",
+                "kind": "SPAN_KIND_INTERNAL",
+                "startTimeUnixNano": "1793035131289326000",
+                "endTimeUnixNano": "1793035131379353333",
+                "attributes": [
+                  {
+                    "key": "fraud.model.version",
+                    "value": {
+                      "stringValue": "unknown"
+                    }
+                  },
+                  {
+                    "key": "fraud.outcome",
+                    "value": {
+                      "stringValue": "success"
+                    }
+                  },
+                  {
+                    "key": "fraud.prompt.version",
+                    "value": {
+                      "stringValue": "investigator-v1@20407ba592d39ea95f2f1f8be5f34786824781931a83504b42c7653d362a6cc0"
+                    }
+                  },
+                  {
+                    "key": "fraud.release",
+                    "value": {
+                      "stringValue": "week32-v1"
+                    }
+                  },
+                  {
+                    "key": "fraud.retrieval.version",
+                    "value": {
+                      "stringValue": "week28-scoped-v1"
+                    }
+                  }
+                ],
+                "status": {}
+              },
+              {
+                "traceId": "M0lFddLvsr8X/e/GZYQYxg==",
+                "spanId": "Kjz8bAvrebg=",
+                "parentSpanId": "X2ufWWB+2nY=",
+                "name": "fraud.execution",
+                "kind": "SPAN_KIND_INTERNAL",
+                "startTimeUnixNano": "1793035131381184000",
+                "endTimeUnixNano": "1793035131408725042",
+                "attributes": [
+                  {
+                    "key": "fraud.model.version",
+                    "value": {
+                      "stringValue": "unknown"
+                    }
+                  },
+                  {
+                    "key": "fraud.outcome",
+                    "value": {
+                      "stringValue": "success"
+                    }
+                  },
+                  {
+                    "key": "fraud.prompt.version",
+                    "value": {
+                      "stringValue": "investigator-v1@20407ba592d39ea95f2f1f8be5f34786824781931a83504b42c7653d362a6cc0"
+                    }
+                  },
+                  {
+                    "key": "fraud.release",
+                    "value": {
+                      "stringValue": "week32-v1"
+                    }
+                  },
+                  {
+                    "key": "fraud.retrieval.version",
+                    "value": {
+                      "stringValue": "week28-scoped-v1"
+                    }
+                  }
+                ],
+                "status": {}
+              },
+              {
+                "traceId": "M0lFddLvsr8X/e/GZYQYxg==",
+                "spanId": "/q8LczXzvC8=",
+                "parentSpanId": "wQmekF02Q40=",
+                "name": "fraud.outbox",
+                "kind": "SPAN_KIND_INTERNAL",
+                "startTimeUnixNano": "1793035131398993000",
+                "endTimeUnixNano": "1793035131414863958",
+                "attributes": [
+                  {
+                    "key": "fraud.outcome",
+                    "value": {
+                      "stringValue": "success"
+                    }
+                  },
+                  {
+                    "key": "fraud.release",
+                    "value": {
+                      "stringValue": "week32-v1"
+                    }
+                  }
+                ],
+                "links": [
+                  {
+                    "traceId": "Xw1K7hmlqNLtJ/4y8jk4bQ==",
+                    "spanId": "WRkmNujY67w="
+                  }
+                ],
+                "status": {}
+              },
+              {
+                "traceId": "M0lFddLvsr8X/e/GZYQYxg==",
+                "spanId": "RybxqR69vpw=",
+                "parentSpanId": "wQmekF02Q40=",
+                "name": "fraud.outbox",
+                "kind": "SPAN_KIND_INTERNAL",
+                "startTimeUnixNano": "1793035131411718000",
+                "endTimeUnixNano": "1793035131421154667",
+                "attributes": [
+                  {
+                    "key": "fraud.outcome",
+                    "value": {
+                      "stringValue": "success"
+                    }
+                  },
+                  {
+                    "key": "fraud.release",
+                    "value": {
+                      "stringValue": "week32-v1"
+                    }
+                  }
+                ],
+                "status": {}
+              },
+              {
+                "traceId": "M0lFddLvsr8X/e/GZYQYxg==",
+                "spanId": "5TJlF32NeoY=",
+                "parentSpanId": "wQmekF02Q40=",
+                "name": "fraud.outbox",
+                "kind": "SPAN_KIND_INTERNAL",
+                "startTimeUnixNano": "1793035131422653000",
+                "endTimeUnixNano": "1793035131431580917",
+                "attributes": [
+                  {
+                    "key": "fraud.outcome",
+                    "value": {
+                      "stringValue": "success"
+                    }
+                  },
+                  {
+                    "key": "fraud.release",
+                    "value": {
+                      "stringValue": "week32-v1"
+                    }
+                  }
+                ],
+                "status": {}
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

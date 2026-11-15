@@ -1,0 +1,11 @@
+{
+  "_file": "docs/evidence/week32/slow-operation.json",
+  "_purpose": "Actual failed-provider fixture latency; short-window demonstration, not a production workload benchmark",
+  "report": {
+    "exportedTimerUnit": "milliseconds",
+    "reportedUnit": "seconds",
+    "window": "30m demonstration history",
+    "p95Seconds": 1.41376006795,
+    "scenario": "HTTP fixture with 1.2-second delay and 503 status"
+  }
+}
