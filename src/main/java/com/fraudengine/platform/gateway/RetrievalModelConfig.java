@@ -1,9 +1,18 @@
 /**
- *  Spring bean wiring independently chooses the embedding and answer adapters.
- * Fixture/extractive defaults keep development runnable without downloads or paid calls; responses
- * label them. Selecting Ollama makes model availability a visible requirement, with no silent
- * fallback. Configuration switches do not alter Week 26 ingestion, which remains a separately
- * verified pipeline.
+ * ============================================================================
+ * FILE:        src/main/java/com/fraudengine/platform/gateway/RetrievalModelConfig.java
+ * CONTEXT:     platform
+ * LAYER:       infrastructure
+ * PURPOSE:     Choose local/fixture adapters behind the model gateway and wire operational accounting.
+ * ----------------------------------------------------------------------------
+ * OWNER:       Fraud Investigation Engineering
+ * SINCE:       week-27
+ * RELATED:     ADR-001, ADR-002, curriculum week 32
+ * ----------------------------------------------------------------------------
+ * NOTES:
+ *   - Provider implementations remain in the gateway; no cloud fallback is selected.
+ *   - The shared local client enforces outbound privacy and reports actual usage when available.
+ * ============================================================================
  */
 package com.fraudengine.platform.gateway;
 
@@ -18,8 +27,8 @@ public class RetrievalModelConfig {
     @Bean
     public OllamaLocalClient localRetrievalClient(
             @Value("${knowledge.retrieval.ollama-url:http://127.0.0.1:11434}") String url,
-            ObjectMapper mapper) {
-        return new OllamaLocalClient(url, mapper);
+            ObjectMapper mapper,com.fraudengine.platform.api.OperationalTelemetry telemetry) {
+        return new OllamaLocalClient(url,mapper,telemetry);
     }
 
     @Bean

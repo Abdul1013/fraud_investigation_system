@@ -17,56 +17,135 @@
  */
 package com.fraudengine.platform.gateway.provider;
 
-import com.fraudengine.platform.api.ToolCallingPort;
-import com.fraudengine.platform.gateway.ModelUnavailableException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fraudengine.platform.api.ToolCallingPort;
+import com.fraudengine.platform.gateway.ModelUnavailableException;
 import java.util.*;
 
 public class OllamaToolCallingAdapter implements ToolCallingPort {
-    private final OllamaLocalClient client;
-    private final String model;
-    private final ObjectMapper mapper;
+  private final OllamaLocalClient client;
+  private final String model;
+  private final ObjectMapper mapper;
 
-    public OllamaToolCallingAdapter(OllamaLocalClient client, String model, ObjectMapper mapper) {
-        this.client = client; this.model = model; this.mapper = mapper;
-    }
+  public OllamaToolCallingAdapter(OllamaLocalClient client, String model, ObjectMapper mapper) {
+    this.client = client;
+    this.model = model;
+    this.mapper = mapper;
+  }
 
-    @Override
-    public Response turn(List<Message> messages, List<Definition> tools) {
-        String version = "ollama:" + model + "@" + client.digest(model);
-        var encoded = messages.stream().map(message -> {
-            Map<String, Object> value = new LinkedHashMap<>();
-            value.put("role", message.role()); value.put("content", message.content());
-            if (message.call() != null) value.put("tool_calls", List.of(Map.of("type", "function", "function",
-                    Map.of("name", message.call().name(), "arguments", message.call().arguments()))));
-            if (message.toolName() != null) value.put("tool_name", message.toolName());
-            return value;
-        }).toList();
-        var schemas = tools.stream().map(tool -> Map.of("type", "function", "function",
-                Map.of("name", tool.name(), "description", tool.description(), "parameters", tool.schema()))).toList();
-        var raw = client.post("/api/chat", Map.of("model", model, "stream", false,
-                "messages", encoded, "tools", schemas, "options", Map.of("temperature", 0, "num_predict", 512)));
-        var message = raw.path("message");
-        if (!message.isObject()) throw new ModelUnavailableException("Malformed tool-calling response");
-        String content = message.path("content").asText("");
-        var calls = message.path("tool_calls");
-        if (content.length() > 8000 || (!calls.isMissingNode() && (!calls.isArray() || calls.size() > 1))) {
-            throw new ModelUnavailableException("Tool response exceeded the allowed shape");
-        }
-        List<Call> result = new ArrayList<>();
-        for (var call : calls) {
-            var function = call.path("function");
-            var args = function.path("arguments");
-            if (!function.path("name").isTextual() || function.path("name").asText().length() > 100 || !args.isObject() || args.toString().length() > 5000) {
-                throw new ModelUnavailableException("Malformed tool arguments");
-            }
-            result.add(new Call(UUID.randomUUID().toString(), function.path("name").asText(),
-                    mapper.convertValue(args, new TypeReference<Map<String, Object>>() {})));
-        }
-        if (!version.equals("ollama:" + model + "@" + client.digest(model))) {
-            throw new ModelUnavailableException("Model changed during tool turn");
-        }
-        return new Response(content, List.copyOf(result), version);
+  @Override
+  public Response turnPinned(List<Message> messages, List<Definition> tools, String version) {
+    String selected = pinnedModel(version);
+    if (!version.equals("ollama:" + selected + "@" + client.digest(selected)))
+      throw new ModelUnavailableException("Pinned model is unavailable");
+    var response = new OllamaToolCallingAdapter(client, selected, mapper).turn(messages, tools);
+    if (!version.equals(response.modelVersion()))
+      throw new ModelUnavailableException("Pinned model changed");
+    return response;
+  }
+
+  private String pinnedModel(String version) {
+    if (version == null || !version.matches("ollama:[a-zA-Z0-9._:/-]{1,120}@[0-9a-f]{64}"))
+      throw new IllegalArgumentException("Invalid pinned model identity");
+    return version.substring(7, version.lastIndexOf('@'));
+  }
+
+  @Override
+  public Response turn(List<Message> messages, List<Definition> tools) {
+    String version = "ollama:" + model + "@" + client.digest(model);
+    var encoded =
+        messages.stream()
+            .map(
+                message -> {
+                  Map<String, Object> value = new LinkedHashMap<>();
+                  value.put("role", message.role());
+                  value.put("content", message.content());
+                  if (message.call() != null)
+                    value.put(
+                        "tool_calls",
+                        List.of(
+                            Map.of(
+                                "type",
+                                "function",
+                                "function",
+                                Map.of(
+                                    "name",
+                                    message.call().name(),
+                                    "arguments",
+                                    message.call().arguments()))));
+                  if (message.toolName() != null) value.put("tool_name", message.toolName());
+                  return value;
+                })
+            .toList();
+    var schemas =
+        tools.stream()
+            .map(
+                tool ->
+                    Map.of(
+                        "type",
+                        "function",
+                        "function",
+                        Map.of(
+                            "name",
+                            tool.name(),
+                            "description",
+                            tool.description(),
+                            "parameters",
+                            tool.schema())))
+            .toList();
+    var raw =
+        client.post(
+            "/api/chat",
+            Map.of(
+                "model",
+                model,
+                "stream",
+                false,
+                "messages",
+                encoded,
+                "tools",
+                schemas,
+                "options",
+                Map.of("temperature", 0, "num_predict", 512)));
+    var message = raw.path("message");
+    if (!message.isObject()) throw new ModelUnavailableException("Malformed tool-calling response");
+    String content = message.path("content").asText("");
+    var calls = message.path("tool_calls");
+    if (content.length() > 8000
+        || (!calls.isMissingNode() && (!calls.isArray() || calls.size() > 1))) {
+      throw new ModelUnavailableException("Tool response exceeded the allowed shape");
     }
+    List<Call> result = new ArrayList<>();
+    for (var call : calls) {
+      var function = call.path("function");
+      var args = function.path("arguments");
+      if (!function.path("name").isTextual()
+          || function.path("name").asText().length() > 100
+          || !args.isObject()
+          || args.toString().length() > 5000) {
+        throw new ModelUnavailableException("Malformed tool arguments");
+      }
+      result.add(
+          new Call(
+              UUID.randomUUID().toString(),
+              function.path("name").asText(),
+              mapper.convertValue(args, new TypeReference<Map<String, Object>>() {})));
+    }
+    if (!version.equals("ollama:" + model + "@" + client.digest(model))) {
+      throw new ModelUnavailableException("Model changed during tool turn");
+    }
+    boolean reported =
+        raw.path("prompt_eval_count").isIntegralNumber()
+            && raw.path("eval_count").isIntegralNumber();
+    return new Response(
+        content,
+        List.copyOf(result),
+        version,
+        new com.fraudengine.platform.api.ModelUsage(
+            reported,
+            Math.max(0, raw.path("prompt_eval_count").asLong(0)),
+            Math.max(0, raw.path("eval_count").asLong(0)),
+            Math.max(0, raw.path("total_duration").asLong(0))));
+  }
 }

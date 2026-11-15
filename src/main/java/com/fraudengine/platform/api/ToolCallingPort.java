@@ -20,15 +20,34 @@ import java.util.List;
 import java.util.Map;
 
 public interface ToolCallingPort {
-    Response turn(List<Message> messages, List<Definition> tools);
+  Response turn(List<Message> messages, List<Definition> tools);
 
-    enum Effect { READ, PROPOSAL }
-    record Definition(String name, String description, Map<String, Object> schema, Effect effect) {
-        public Definition(String name, String description, Map<String, Object> schema) {
-            this(name, description, schema, Effect.READ);
-        }
+  default Response turnPinned(List<Message> messages, List<Definition> tools, String modelVersion) {
+    throw new UnsupportedOperationException("Adapter does not support immutable model selection");
+  }
+
+  enum Effect {
+    READ,
+    PROPOSAL
+  }
+
+  record Definition(String name, String description, Map<String, Object> schema, Effect effect) {
+    public Definition(String name, String description, Map<String, Object> schema) {
+      this(name, description, schema, Effect.READ);
     }
-    record Call(String id, String name, Map<String, Object> arguments) {}
-    record Message(String role, String content, Call call, String toolName) {}
-    record Response(String content, List<Call> calls, String modelVersion) {}
+  }
+
+  record Call(String id, String name, Map<String, Object> arguments) {}
+
+  record Message(String role, String content, Call call, String toolName) {}
+
+  record Response(String content, List<Call> calls, String modelVersion, ModelUsage usage) {
+    public Response {
+      usage = usage == null ? ModelUsage.unavailable() : usage;
+    }
+
+    public Response(String content, List<Call> calls, String modelVersion) {
+      this(content, calls, modelVersion, ModelUsage.unavailable());
+    }
+  }
 }
