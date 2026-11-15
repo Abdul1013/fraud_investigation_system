@@ -1,0 +1,174 @@
+{
+  "_purpose" : "Actual local operational demonstration; no credentials or source bodies",
+  "report" : {
+    "fired" : true,
+    "recovered" : true,
+    "timeline" : [ {
+      "at" : "2026-10-26T17:05:07.152108Z",
+      "providerAlertFiring" : false,
+      "phase" : "forced-503-and-1.2s-delay"
+    }, {
+      "at" : "2026-10-26T17:05:09.392419Z",
+      "providerAlertFiring" : false,
+      "phase" : "forced-503-and-1.2s-delay"
+    }, {
+      "at" : "2026-10-26T17:05:11.634506Z",
+      "providerAlertFiring" : false,
+      "phase" : "forced-503-and-1.2s-delay"
+    }, {
+      "at" : "2026-10-26T17:05:13.874006Z",
+      "providerAlertFiring" : false,
+      "phase" : "forced-503-and-1.2s-delay"
+    }, {
+      "at" : "2026-10-26T17:05:16.106323Z",
+      "providerAlertFiring" : false,
+      "phase" : "forced-503-and-1.2s-delay"
+    }, {
+      "at" : "2026-10-26T17:05:18.344657Z",
+      "providerAlertFiring" : false,
+      "phase" : "forced-503-and-1.2s-delay"
+    }, {
+      "at" : "2026-10-26T17:05:20.773251Z",
+      "providerAlertFiring" : false,
+      "phase" : "forced-503-and-1.2s-delay"
+    }, {
+      "at" : "2026-10-26T17:05:23.025714Z",
+      "providerAlertFiring" : false,
+      "phase" : "forced-503-and-1.2s-delay"
+    }, {
+      "at" : "2026-10-26T17:05:25.263756Z",
+      "providerAlertFiring" : false,
+      "phase" : "forced-503-and-1.2s-delay"
+    }, {
+      "at" : "2026-10-26T17:05:27.487761Z",
+      "providerAlertFiring" : false,
+      "phase" : "forced-503-and-1.2s-delay"
+    }, {
+      "at" : "2026-10-26T17:05:29.732544Z",
+      "providerAlertFiring" : false,
+      "phase" : "forced-503-and-1.2s-delay"
+    }, {
+      "at" : "2026-10-26T17:05:31.983695Z",
+      "providerAlertFiring" : true,
+      "phase" : "forced-503-and-1.2s-delay"
+    }, {
+      "at" : "2026-10-26T17:05:33.236933Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:05:35.268411Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:05:37.283962Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:05:39.309201Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:05:41.327243Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:05:43.359407Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:05:45.376024Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:05:47.770968Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:05:49.866164Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:05:51.903551Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:05:53.943934Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:05:55.993291Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:05:58.038902Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:06:00.067909Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:06:02.121694Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:06:04.147573Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:06:06.162976Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:06:08.292270Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:06:10.346162Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:06:12.381390Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:06:14.574068Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:06:16.594947Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:06:18.781596Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:06:20.812277Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:06:22.959649Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:06:24.989615Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:06:27.067517Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:06:29.095002Z",
+      "providerAlertFiring" : true,
+      "phase" : "provider-restored"
+    }, {
+      "at" : "2026-10-26T17:06:31.163723Z",
+      "providerAlertFiring" : false,
+      "phase" : "provider-restored"
+    } ],
+    "fixture" : "real HTTP 503/slow response fixture; not a native-model outage"
+  },
+  "_file" : "docs/evidence/week32/alert-timeline.json"
+}

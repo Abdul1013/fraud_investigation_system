@@ -1,0 +1,32 @@
+{
+  "_file": "docs/evidence/week32/operational-checks.json",
+  "_purpose": "Actual monitoring readiness, dashboard provisioning and trace completeness checks",
+  "report": {
+    "grafanaVersion": "13.2.4",
+    "dashboardUid": "fraud-week32",
+    "panelCount": 6,
+    "prometheusTargetsUp": 1,
+    "alertRules": [
+      "FraudExecutionErrors",
+      "FraudOperationLatency",
+      "FraudOutboxBacklog",
+      "FraudProviderErrors"
+    ],
+    "traceId": "33494575d2efb2bf17fdefc6658418c6",
+    "spanCount": 21,
+    "requiredStages": [
+      "fraud.activity",
+      "fraud.approval",
+      "fraud.execution",
+      "fraud.model",
+      "fraud.outbox",
+      "fraud.retrieval",
+      "fraud.tool"
+    ],
+    "auditEvents": 10,
+    "nativeUsageReported": true,
+    "providerAlertFired": true,
+    "providerAlertRecovered": true,
+    "longWindowSlo": "not demonstrated"
+  }
+}

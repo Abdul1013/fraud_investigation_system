@@ -1,0 +1,36 @@
+{
+  "_file" : "docs/evidence/week32/lifecycle-audit.json",
+  "audit" : [ {
+    "event_type" : "INVESTIGATION_NEW",
+    "trace_id" : "33494575d2efb2bf17fdefc6658418c6"
+  }, {
+    "event_type" : "INVESTIGATION_INVESTIGATING",
+    "trace_id" : "33494575d2efb2bf17fdefc6658418c6"
+  }, {
+    "event_type" : "TOOL_COMPLETED",
+    "trace_id" : "33494575d2efb2bf17fdefc6658418c6"
+  }, {
+    "event_type" : "INVESTIGATION_TOOL_RESULT",
+    "trace_id" : "33494575d2efb2bf17fdefc6658418c6"
+  }, {
+    "event_type" : "RECOMMENDATION_CREATED",
+    "trace_id" : "33494575d2efb2bf17fdefc6658418c6"
+  }, {
+    "event_type" : "TOOL_COMPLETED",
+    "trace_id" : "33494575d2efb2bf17fdefc6658418c6"
+  }, {
+    "event_type" : "INVESTIGATION_TOOL_RESULT",
+    "trace_id" : "33494575d2efb2bf17fdefc6658418c6"
+  }, {
+    "event_type" : "INVESTIGATION_PENDING_APPROVAL",
+    "trace_id" : "33494575d2efb2bf17fdefc6658418c6"
+  }, {
+    "event_type" : "APPROVAL_GRANTED",
+    "trace_id" : "33494575d2efb2bf17fdefc6658418c6"
+  }, {
+    "event_type" : "SIMULATED_FREEZE_EXECUTED",
+    "trace_id" : "33494575d2efb2bf17fdefc6658418c6"
+  } ],
+  "_purpose" : "Real Temporal restart and correlated action audit; model and step-up are explicit fixtures",
+  "traceId" : "33494575d2efb2bf17fdefc6658418c6"
+}

@@ -1,0 +1,17 @@
+{
+  "_purpose" : "Actual local operational demonstration; no credentials or source bodies",
+  "report" : {
+    "apiChargedUsd" : 0,
+    "kind" : "actual local Ollama, synthetic prompt",
+    "localComputeUsdPerHourAssumption" : 0.08,
+    "usage" : {
+      "reported" : true,
+      "inputTokens" : 35,
+      "outputTokens" : 3,
+      "inferenceNanos" : 6457144500
+    },
+    "estimatedLocalComputeUsd" : 1.434921E-4,
+    "model" : "ollama:qwen2.5:1.5b@65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b"
+  },
+  "_file" : "docs/evidence/week32/native-usage.json"
+}
