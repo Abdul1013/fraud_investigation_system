@@ -1,0 +1,16 @@
+# ============================================================================
+# FILE: observability/prometheus/week32-prometheus.yml
+# PURPOSE: Scrape collector output and evaluate reproducible short-window operational alerts.
+# OWNER: Platform & Operations
+# SINCE: week-32
+# RELATED: week32-alerts.yml
+# NOTES: The application exports OTLP; no unauthenticated application scrape endpoint is needed.
+# ============================================================================
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+rule_files: [/etc/prometheus/alerts.yml]
+scrape_configs:
+  - job_name: fraud-collector
+    static_configs:
+      - targets: [collector:8889]

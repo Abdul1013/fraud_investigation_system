@@ -1,0 +1,31 @@
+# ============================================================================
+# FILE: observability/prometheus/week32-alerts.yml
+# PURPOSE: Alert on sustained provider errors, queue backlog, latency and unexpected execution errors.
+# OWNER: Platform & Operations
+# SINCE: week-32
+# RELATED: docs/week32-implementation.md
+# NOTES: Short demonstration windows are not a 28-day SLO claim.
+# ============================================================================
+groups:
+  - name: fraud-operations
+    rules:
+      - alert: FraudProviderErrors
+        expr: sum(increase(fraud_operation_total{stage="provider",outcome="error"}[1m])) > 2
+        for: 10s
+        labels: {severity: warning}
+        annotations: {summary: "Local provider requests are failing repeatedly"}
+      - alert: FraudOutboxBacklog
+        expr: sum(fraud_outbox_pending) > 20
+        for: 30s
+        labels: {severity: warning}
+        annotations: {summary: "Committed workflow delivery backlog is sustained"}
+      - alert: FraudOperationLatency
+        expr: histogram_quantile(0.95, sum by (le) (rate(fraud_operation_duration_milliseconds_bucket[1m]))) / 1000 > 1
+        for: 15s
+        labels: {severity: warning}
+        annotations: {summary: "Operation p95 duration exceeds the local demonstration budget"}
+      - alert: FraudExecutionErrors
+        expr: sum(increase(fraud_operation_total{stage="execution",outcome="error"}[1m])) > 0
+        for: 5s
+        labels: {severity: critical}
+        annotations: {summary: "Human execution reported an unexpected error; inspect the action audit"}

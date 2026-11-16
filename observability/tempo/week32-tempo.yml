@@ -1,0 +1,23 @@
+# ============================================================================
+# FILE: observability/tempo/week32-tempo.yml
+# PURPOSE: Store sanitized local demonstration traces.
+# OWNER: Platform & Operations
+# SINCE: week-32
+# RELATED: observability/compose.yml
+# NOTES: Local filesystem storage is demonstration-only, with no restricted payloads.
+# ============================================================================
+server:
+  http_listen_port: 3200
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        http:
+          endpoint: 0.0.0.0:4318
+storage:
+  trace:
+    backend: local
+    local:
+      path: /tmp/tempo/blocks
+    wal:
+      path: /tmp/tempo/wal
