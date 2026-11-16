@@ -1,0 +1,24 @@
+# ============================================================================
+# FILE: src/main/resources/application-observability.yml
+# PURPOSE: Push bounded metrics and sampled traces to the private local collector.
+# OWNER: Platform & Operations
+# SINCE: week-32
+# RELATED: observability/compose.yml
+# NOTES: No public application metrics route is introduced; raw prompts and credentials are excluded.
+# ============================================================================
+management:
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0
+  otlp:
+    tracing:
+      endpoint: ${OTLP_TRACES_URL:http://127.0.0.1:4318/v1/traces}
+    metrics:
+      export:
+        enabled: true
+        url: ${OTLP_METRICS_URL:http://127.0.0.1:4318/v1/metrics}
+        step: 5s
+observability:
+  release: week32-v1
+  local-compute-usd-per-hour: ${LOCAL_COMPUTE_USD_PER_HOUR:0.08}
