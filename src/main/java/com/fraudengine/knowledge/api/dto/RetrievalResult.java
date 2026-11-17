@@ -14,6 +14,17 @@ public record RetrievalResult(
         String embeddingSpace,
         boolean fixtureEmbeddings,
         String strategy,
-        List<Passage> passages) {
-    public record Passage(String text, double score, Citation citation) {}
+        List<Passage> passages, boolean degraded, String degradationReason) {
+    public RetrievalResult(int corpusVersion, String retrievalConfigVersion, String embeddingSpace,
+            boolean fixtureEmbeddings, String strategy, List<Passage> passages) {
+        this(corpusVersion, retrievalConfigVersion, embeddingSpace, fixtureEmbeddings, strategy, passages, false, null);
+    }
+
+    public RetrievalResult asDegraded(String reason) {
+        return new RetrievalResult(corpusVersion, retrievalConfigVersion, embeddingSpace, fixtureEmbeddings, strategy,
+                passages, true, reason);
+    }
+
+    public record Passage(String text, double score, Citation citation) {
+    }
 }

@@ -52,11 +52,13 @@ public class CaseService implements CaseApi {
             throw new AccessDeniedException();
         }
         var granted = requireGranted(caseId, caller);
-        return new CaseEvidenceScope(caseId, granted.ceiling(), repository.sourceIds(caseId));
+        return new CaseEvidenceScope(caseId, granted.ceiling(), repository.sourceIds(caseId),
+                repository.scopeRevision(caseId));
     }
 
     private CaseRepository.GrantedCase requireGranted(String caseId, CallerContext caller) {
-        // Check capability before accessing persistence; assignment comes only from the repository.
+        // Check capability before accessing persistence; assignment comes only from the
+        // repository.
         if (!caller.hasPermission(Permission.READ_CASE) || caseId == null || caseId.isBlank()
                 || caseId.length() > 100) {
             throw new AccessDeniedException();

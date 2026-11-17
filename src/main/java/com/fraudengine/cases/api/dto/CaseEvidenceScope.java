@@ -19,7 +19,11 @@ package com.fraudengine.cases.api.dto;
 
 import java.util.Set;
 
-public record CaseEvidenceScope(String caseId, String classificationCeiling, Set<String> sourceIds) {
+public record CaseEvidenceScope(String caseId, String classificationCeiling, Set<String> sourceIds, long revision) {
+    public CaseEvidenceScope(String caseId, String ceiling, Set<String> sources) {
+        this(caseId, ceiling, sources, 0);
+    }
+
     public CaseEvidenceScope {
         if (caseId == null || caseId.isBlank() || !Set.of("C0", "C1", "C2").contains(classificationCeiling)) {
             throw new IllegalArgumentException("Invalid case evidence scope");
