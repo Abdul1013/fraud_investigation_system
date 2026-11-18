@@ -38,8 +38,8 @@ public class CaseRepository {
                 JOIN case_management.case_grants g ON g.case_id=c.case_id
                 WHERE c.case_id=? AND g.subject=? AND c.classification <= g.classification_ceiling
                 """, (row, index) -> new GrantedCase(new CaseDto(row.getString("case_id"),
-                        CaseDto.Status.valueOf(row.getString("status")), row.getString("summary")),
-                        row.getString("classification_ceiling")), caseId, subject).stream().findFirst();
+                CaseDto.Status.valueOf(row.getString("status")), row.getString("summary")),
+                row.getString("classification_ceiling")), caseId, subject).stream().findFirst();
     }
 
     public Set<String> sourceIds(String caseId) {
@@ -47,5 +47,13 @@ public class CaseRepository {
                 "SELECT source_id FROM case_management.case_sources WHERE case_id=?", String.class, caseId));
     }
 
-    public record GrantedCase(CaseDto details, String ceiling) {}
+    public record GrantedCase(CaseDto details, String ceiling) {
+    }
+
+    public long scopeRevision(String caseId) {
+        return jdbc.queryForObject(
+                "SELECT coalesce((SELECT revision FROM case_management.scope_revisions WHERE case_id=?),0)", Long.class,
+                caseId);
+    }
+
 }

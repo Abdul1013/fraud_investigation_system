@@ -1,9 +1,18 @@
 /**
- *  Thin HTTP adapter exposes retrieval, grounded answers, and explicit model indexing.
- * Validation occurs before service work. Missing corpus/index returns 409; unavailable model returns 503;
- * a legitimate unknown answer remains a successful response with INSUFFICIENT_EVIDENCE. Separating these
- * cases prevents a broken environment from masquerading as an empty knowledge base. Development identity
- * clearance is server configuration; full authenticated per-user authorization remains Week 31 work.
+ * ============================================================================
+ * FILE:        src/main/java/com/fraudengine/knowledge/infrastructure/RetrievalController.java
+ * CONTEXT:     knowledge
+ * LAYER:       infrastructure
+ * PURPOSE:     Bound global curator reads at the authenticated HTTP adapter.
+ * ----------------------------------------------------------------------------
+ * OWNER:       Fraud Investigation Engineering
+ * SINCE:       week-27
+ * RELATED:     ADR-001, ADR-002, curriculum week 33
+ * ----------------------------------------------------------------------------
+ * NOTES:
+ *   - Internal retrieval remains usable for offline evaluation; scoped public APIs enforce their own admission.
+ *   - Indexing has an independent non-queued semaphore and retains curator authorization.
+ * ============================================================================
  */
 package com.fraudengine.knowledge.infrastructure;
 
@@ -18,11 +27,14 @@ import java.util.Map;
 
 @RestController
 public class RetrievalController {
+    private final com.fraudengine.platform.api.ReadAdmission admission;
     private final RetrievalService retrieval;
     private final AnswerService answers;
     private final RetrievalIndexService index;
 
-    public RetrievalController(RetrievalService retrieval, AnswerService answers, RetrievalIndexService index) {
+    public RetrievalController(RetrievalService retrieval, AnswerService answers, RetrievalIndexService index,
+            com.fraudengine.platform.api.ReadAdmission admission) {
+        this.admission = admission;
         this.retrieval = retrieval;
         this.answers = answers;
         this.index = index;
@@ -33,12 +45,12 @@ public class RetrievalController {
 
     @PostMapping({ "/v1/retrieve", "/v1/knowledge/retrieval" })
     public RetrievalResult retrieve(@Valid @RequestBody RetrievalRequest request) {
-        return retrieval.retrieve(request);
+        return admission.call(() -> retrieval.retrieve(request));
     }
 
     @PostMapping("/v1/knowledge/answers")
     public AnswerResult answer(@Valid @RequestBody RetrievalRequest request) {
-        return answers.answer(request);
+        return admission.call(() -> answers.answer(request));
     }
 
     @PostMapping("/v1/knowledge/retrieval/index")

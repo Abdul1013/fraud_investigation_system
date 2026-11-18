@@ -30,6 +30,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public final class SpringSecurityCurrentCaller implements CurrentCaller {
+    private final org.springframework.beans.factory.ObjectProvider<OidcIdentityLinks> links;
+
+    public SpringSecurityCurrentCaller(org.springframework.beans.factory.ObjectProvider<OidcIdentityLinks> links) {
+        this.links = links;
+    }
+
     @Override
     public CallerContext requireAuthenticated() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -37,7 +43,17 @@ public final class SpringSecurityCurrentCaller implements CurrentCaller {
                 || authentication instanceof AnonymousAuthenticationToken) {
             throw new AccessDeniedException();
         }
-        Set<String> authorities = authentication.getAuthorities().stream()
+        var effective = authentication.getAuthorities();
+        if (authentication instanceof org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken bearer) {
+            var jwt = bearer.getToken();
+            if (jwt.getExpiresAt() == null || !jwt.getExpiresAt().isAfter(java.time.Instant.now()))
+                throw new AccessDeniedException();
+            var fresh = links.getObject().verified(jwt.getIssuer().toString(), jwt.getSubject());
+            if (!fresh.getUsername().equals(authentication.getName()))
+                throw new AccessDeniedException();
+            effective = fresh.getAuthorities();
+        }
+        Set<String> authorities = effective.stream()
                 .map(authority -> authority.getAuthority()).collect(Collectors.toSet());
         var permissions = Arrays.stream(Permission.values())
                 .filter(permission -> authorities.contains(permission.name())).collect(Collectors.toSet());

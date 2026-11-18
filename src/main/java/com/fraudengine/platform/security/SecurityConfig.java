@@ -54,60 +54,69 @@ public class SecurityConfig {
     }
 
     @Bean
-    @org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication(
-            type = org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type.SERVLET)
+    @org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication(type = org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type.SERVLET)
     SecurityFilterChain securityFilterChain(HttpSecurity http,
-            @org.springframework.beans.factory.annotation.Value("${engine.security.mode:oidc}")String mode,
+            @org.springframework.beans.factory.annotation.Value("${engine.security.mode:oidc}") String mode,
             org.springframework.core.env.Environment environment,
             org.springframework.beans.factory.ObjectProvider<org.springframework.security.oauth2.jwt.JwtDecoder> decoders,
             org.springframework.beans.factory.ObjectProvider<OidcIdentityLinks> links) throws Exception {
-        if("basic".equals(mode)) {
-            if(!environment.acceptsProfiles(org.springframework.core.env.Profiles.of("local-learning","test"))
-                    ||environment.acceptsProfiles(org.springframework.core.env.Profiles.of("staging","prod")))
-                throw new IllegalStateException("Basic authentication requires the explicit local-learning or test profile");
+        if ("basic".equals(mode)) {
+            if (!environment.acceptsProfiles(org.springframework.core.env.Profiles.of("local-learning", "test"))
+                    || environment.acceptsProfiles(org.springframework.core.env.Profiles.of("staging", "prod")))
+                throw new IllegalStateException(
+                        "Basic authentication requires the explicit local-learning or test profile");
             http.httpBasic(Customizer.withDefaults()).csrf(Customizer.withDefaults());
-        } else if("oidc".equals(mode)) {
-            http.oauth2ResourceServer(resource->resource.jwt(jwt->jwt.decoder(decoders.getObject())
-                    .jwtAuthenticationConverter(token->OidcSecurity.linked(token,links.getObject()))));
-            // Authorization uses only a manually attached bearer token; no ambient cookies authenticate the API.
-            http.csrf(csrf->csrf.disable()).sessionManagement(session->session.sessionCreationPolicy(
+        } else if ("oidc".equals(mode)) {
+            http.oauth2ResourceServer(resource -> resource.jwt(jwt -> jwt.decoder(decoders.getObject())
+                    .jwtAuthenticationConverter(token -> OidcSecurity.linked(token, links.getObject()))));
+            // Authorization uses only a manually attached bearer token; no ambient cookies
+            // authenticate the API.
+            http.csrf(csrf -> csrf.disable()).sessionManagement(session -> session.sessionCreationPolicy(
                     org.springframework.security.config.http.SessionCreationPolicy.STATELESS));
-        } else throw new IllegalStateException("Unknown security mode");
+        } else
+            throw new IllegalStateException("Unknown security mode");
         return http
                 .authorizeHttpRequests(access -> access
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
-                        // This marker is set only after the stream controller authorizes the original REQUEST.
-                        // Permit its response-completion dispatch, never a new route or an unmarked async task.
-                        .requestMatchers(request->request.getDispatcherType()==DispatcherType.ASYNC
-                            && Boolean.TRUE.equals(request.getAttribute("fraud.authorized-progress-stream"))
-                            && request.getRequestURI().matches("/v1/investigations/[0-9a-fA-F-]{36}/stream")).permitAll()
-                         .requestMatchers(HttpMethod.GET,"/auth/", "/auth/index.html", "/auth/client.js", "/auth/config").permitAll()
+                        // This marker is set only after the stream controller authorizes the original
+                        // REQUEST.
+                        // Permit its response-completion dispatch, never a new route or an unmarked
+                        // async task.
+                        .requestMatchers(request -> request.getDispatcherType() == DispatcherType.ASYNC
+                                && Boolean.TRUE.equals(request.getAttribute("fraud.authorized-progress-stream"))
+                                && request.getRequestURI().matches("/v1/investigations/[0-9a-fA-F-]{36}/stream"))
+                        .permitAll()
+                        .requestMatchers(HttpMethod.GET, "/auth/", "/auth/index.html", "/auth/client.js",
+                                "/auth/config")
+                        .permitAll()
                         .requestMatchers(HttpMethod.GET, "/actuator/health", "/actuator/health/liveness",
-                                "/actuator/health/readiness").permitAll()
+                                "/actuator/health/readiness")
+                        .permitAll()
                         .requestMatchers(HttpMethod.GET, "/v1/security/me", "/v1/security/csrf").authenticated()
                         .requestMatchers(HttpMethod.POST, "/v1/investigations")
-                            .hasAuthority(Permission.PROPOSE_ACTION.name())
-                        .requestMatchers(HttpMethod.GET, "/v1/investigations/*", "/v1/investigations/*/events", "/v1/investigations/*/stream",
+                        .hasAuthority(Permission.PROPOSE_ACTION.name())
+                        .requestMatchers(HttpMethod.GET, "/v1/investigations/*", "/v1/investigations/*/events",
+                                "/v1/investigations/*/stream",
                                 "/v1/recommendations/*")
-                            .hasAuthority(Permission.READ_CASE.name())
+                        .hasAuthority(Permission.READ_CASE.name())
                         .requestMatchers(HttpMethod.POST, "/v1/recommendations/*/approve",
                                 "/v1/recommendations/*/reject", "/v1/recommendations/*/execute")
-                            .hasAuthority(Permission.APPROVE_ACTION.name())
+                        .hasAuthority(Permission.APPROVE_ACTION.name())
                         .requestMatchers(HttpMethod.GET, "/v1/cases/*/audit")
-                            .hasAuthority(Permission.READ_AUDIT.name())
+                        .hasAuthority(Permission.READ_AUDIT.name())
                         .requestMatchers(HttpMethod.GET, "/v1/cases/*")
-                            .hasAuthority(Permission.READ_CASE.name())
+                        .hasAuthority(Permission.READ_CASE.name())
                         .requestMatchers(HttpMethod.POST, "/v1/cases/*/evidence", "/v1/cases/*/answers")
-                            .hasAuthority(Permission.READ_EVIDENCE.name())
+                        .hasAuthority(Permission.READ_EVIDENCE.name())
                         .requestMatchers(HttpMethod.POST, "/v1/knowledge/source-trust", "/v1/knowledge/ingestions",
                                 "/v1/knowledge/ingestions/*/restart", "/v1/knowledge/retrieval/index")
-                            .hasAuthority(Permission.MANAGE_KNOWLEDGE.name())
+                        .hasAuthority(Permission.MANAGE_KNOWLEDGE.name())
                         .requestMatchers(HttpMethod.GET, "/v1/knowledge/ingestions/*",
                                 "/v1/knowledge/corpus/versions")
-                            .hasAuthority(Permission.MANAGE_KNOWLEDGE.name())
+                        .hasAuthority(Permission.MANAGE_KNOWLEDGE.name())
                         .requestMatchers(HttpMethod.POST, "/v1/retrieve", "/v1/knowledge/retrieval",
                                 "/v1/knowledge/answers")
-                            .hasAuthority(Permission.READ_GLOBAL_EVIDENCE.name())
+                        .hasAuthority(Permission.READ_GLOBAL_EVIDENCE.name())
                         .anyRequest().denyAll())
                 .securityContext(context -> context.securityContextRepository(new NullSecurityContextRepository()))
                 .requestCache(cache -> cache.disable())
