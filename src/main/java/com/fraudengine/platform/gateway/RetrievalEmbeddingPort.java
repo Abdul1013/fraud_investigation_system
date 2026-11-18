@@ -1,15 +1,35 @@
 /**
- * Provider-neutral embedding contract for Week 27's separate search index. An
- * embedding-space identifier includes provider/model revision; the repository never mixes spaces or
- * silently reuses Week 26 token-hash vectors for a semantic model. Float arrays keep provider SDK
- * types out of knowledge code.
+ * ============================================================================
+ * FILE:        src/main/java/com/fraudengine/platform/gateway/RetrievalEmbeddingPort.java
+ * CONTEXT:     platform
+ * LAYER:       infrastructure
+ * PURPOSE:     Expose ordered embedding batches without provider types.
+ * ----------------------------------------------------------------------------
+ * OWNER:       Fraud Investigation Engineering
+ * SINCE:       week-27
+ * RELATED:     ADR-001, ADR-002, curriculum week 33
+ * ----------------------------------------------------------------------------
+ * NOTES:
+ *   - SINCE week-27; the default preserves adapters while native implementations reduce requests.
+ *   - A batch must retain input ordering and one vector per input.
+ * ============================================================================
  */
 package com.fraudengine.platform.gateway;
 
 public interface RetrievalEmbeddingPort {
-    float[] embed(String text);
+  float[] embed(String text);
 
-    String spaceId();
+  default java.util.List<float[]> embedBatch(java.util.List<String> texts) {
+    return texts.stream().map(this::embed).toList();
+  }
 
-    boolean fixture();
+  default RetrievalEmbeddingPort pinned(String space) {
+    if (!space.equals(spaceId()))
+      throw new ModelUnavailableException("Pinned embedding space unavailable");
+    return this;
+  }
+
+  String spaceId();
+
+  boolean fixture();
 }
