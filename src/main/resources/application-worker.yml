@@ -1,0 +1,13 @@
+# ============================================================================
+# FILE: src/main/resources/application-worker.yml
+# PURPOSE: Run workflow activities without exposing an HTTP listener.
+# OWNER: Platform / Orchestration
+# SINCE: week-34
+# RELATED: ADR-004
+# NOTES: Readiness is refreshed only after database and Temporal checks pass.
+# ============================================================================
+spring:
+  main:
+    web-application-type: none
+investigation:
+  worker-enabled: true

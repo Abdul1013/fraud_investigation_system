@@ -1,0 +1,15 @@
+{
+  "_file": "src/main/resources/releases/release-b.json",
+  "_purpose": "Immutable learning release; operator activation never changes an existing investigation",
+  "_since": "week-34",
+  "_notes": "Same native weights under retained aliases isolate prompt rollout; no semantic-model improvement claimed. Corpus 1 must be reviewed and indexed before investigation.",
+  "releaseId": "week34-b",
+  "promptReference": "investigator-v2@16228bea65e86e08553aac7022633cfc3511f844b597028b94ec3e40fa444de7",
+  "modelVersion": "ollama:qwen2.5:week34-b@65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b",
+  "corpusVersion": 1,
+  "embeddingSpace": "ollama:embeddinggemma:week34-v1@85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1",
+  "retrievalConfiguration": "week28-scoped-v1:min=0.15:candidates=20:rrf=60",
+  "minimumSimilarity": 0.15,
+  "retrievalStrategy": "VECTOR",
+  "proposalsEnabled": true
+}
