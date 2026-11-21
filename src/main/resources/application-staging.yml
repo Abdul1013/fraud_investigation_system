@@ -1,16 +1,48 @@
-#
 # ============================================================================
-# FILE:        src/main/resources/application-staging.yml
-# PURPOSE:     Staging profile placeholders for deployment-specific settings.
-# OWNER:       Platform & Operations
-# SINCE:       week-26
-# RELATED:     ADR-001
-# NOTES:
-#   - TODO(week-34): define staging resource and telemetry settings.
-#   - Secrets must be supplied by the deployment environment.
+# FILE: src/main/resources/application-staging.yml
+# PURPOSE: Require separate schema ownership, verified identity and native local models in staging.
+# OWNER: Platform & Operations
+# SINCE: week-26
+# RELATED: ADR-002, ADR-003, curriculum week 34
+# NOTES: A dedicated job migrates first; API and worker credentials do not own schemas. Secrets are injected at runtime.
 # ============================================================================
-#
 spring:
+  flyway:
+    enabled: false
   batch:
     jdbc:
       initialize-schema: never
+  datasource:
+    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+knowledge:
+  trust:
+    required: true
+  retrieval:
+    embedding-provider: ollama
+    embedding-model: embeddinggemma:week34-v1
+    answer-provider: ollama
+    answer-model: qwen2.5:week34-a
+investigation:
+  engine: temporal
+  model-provider: ollama
+engine:
+  security:
+    mode: oidc
+    issuer: ${OIDC_ISSUER}
+    audience: fraud-api
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+      validate-group-membership: false
+      group:
+        readiness:
+          include: readinessState,db,workflow
+server:
+  shutdown: graceful

@@ -1,0 +1,10 @@
+# ============================================================================
+# FILE: src/main/resources/application-api.yml
+# PURPOSE: Serve authenticated API traffic without polling workflow activities.
+# OWNER: Platform / Orchestration
+# SINCE: week-34
+# RELATED: ADR-004
+# NOTES: Outbox delivery remains safe across nodes; only worker processes execute model activities.
+# ============================================================================
+investigation:
+  worker-enabled: false
