@@ -1,0 +1,9 @@
+# ============================================================================
+# FILE: src/main/resources/META-INF/spring.factories
+# PURPOSE: Install the deployment guard before infrastructure beans start.
+# OWNER: Platform & Operations
+# SINCE: week-34
+# RELATED: DeploymentEnvironmentGuard
+# NOTES: Profiles and config data load first; unsafe deployment settings fail before external I/O.
+# ============================================================================
+org.springframework.boot.env.EnvironmentPostProcessor=com.fraudengine.platform.security.DeploymentEnvironmentGuard
