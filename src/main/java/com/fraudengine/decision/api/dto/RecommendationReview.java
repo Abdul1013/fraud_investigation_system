@@ -17,5 +17,12 @@ package com.fraudengine.decision.api.dto;
 
 import com.fraudengine.knowledge.api.dto.RetrievalResult;
 
-public record RecommendationReview(RecommendationDto recommendation, String action, String target,
-        String rationale, RetrievalResult evidence, String modelVersion, String promptVersion) {}
+public record RecommendationReview(
+    RecommendationDto recommendation,
+    String action,
+    String target,
+    String rationale,
+    RetrievalResult evidence,
+    String modelVersion,
+    String promptVersion,
+    com.fraudengine.platform.api.ReleaseEnvelope release) {}
