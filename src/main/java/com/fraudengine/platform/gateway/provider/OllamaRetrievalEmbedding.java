@@ -79,10 +79,9 @@ public class OllamaRetrievalEmbedding implements RetrievalEmbeddingPort {
   public List<float[]> embedBatch(List<String> texts) {
     if (texts.isEmpty() || texts.size() > 32)
       throw new IllegalArgumentException("Embedding batch must contain 1–32 inputs");
-    var values =
-        client
-            .post("/api/embed", Map.of("model", model, "input", texts, "truncate", false))
-            .path("embeddings");
+    var values = client
+        .post("/api/embed", Map.of("model", model, "input", texts, "truncate", false))
+        .path("embeddings");
     if (!values.isArray() || values.size() != texts.size())
       throw new ModelUnavailableException("Malformed local embedding batch");
     var vectors = new ArrayList<float[]>();
@@ -101,7 +100,8 @@ public class OllamaRetrievalEmbedding implements RetrievalEmbeddingPort {
           throw new ModelUnavailableException("Non-finite local embedding");
         norm += (double) vector[i] * vector[i];
       }
-      if (norm == 0) throw new ModelUnavailableException("Zero local embedding");
+      if (norm == 0)
+        throw new ModelUnavailableException("Zero local embedding");
       vectors.add(vector);
     }
     return List.copyOf(vectors);

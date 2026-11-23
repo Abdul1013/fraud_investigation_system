@@ -22,15 +22,15 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 public interface KnowledgeApi {
-  com.fraudengine.knowledge.api.dto.AnswerResult answerCaseEvidence(
-      String caseId, @NotNull @Valid RetrievalRequest request);
+    com.fraudengine.knowledge.api.dto.AnswerResult answerCaseEvidence(
+            String caseId, @NotNull @Valid RetrievalRequest request);
 
-  RetrievalResult retrievePinnedCaseEvidence(
-      String caseId,
-      @NotNull @Valid RetrievalRequest request,
-      @NotNull com.fraudengine.platform.api.ReleaseEnvelope release);
+    RetrievalResult retrievePinnedCaseEvidence(
+            String caseId,
+            @NotNull @Valid RetrievalRequest request,
+            @NotNull com.fraudengine.platform.api.ReleaseEnvelope release);
 
-  void validateCaseEvidence(String caseId, @NotNull RetrievalResult evidence);
+    void validateCaseEvidence(String caseId, @NotNull RetrievalResult evidence);
 
-  RetrievalResult retrieveCaseEvidence(String caseId, @NotNull @Valid RetrievalRequest request);
+    RetrievalResult retrieveCaseEvidence(String caseId, @NotNull @Valid RetrievalRequest request);
 }
