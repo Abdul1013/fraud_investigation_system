@@ -54,14 +54,12 @@ public class CaseEvidenceService implements KnowledgeApi {
     var scope = cases.evidenceScope(caseId);
     RetrievalResult found;
     try {
-      found =
-          cache.read(
-              scope,
-              request,
-              retrieval.version(request, true),
-              () ->
-                  retrieval.retrieveScoped(
-                      request, scope.classificationCeiling(), scope.sourceIds()));
+      found = cache.read(
+          scope,
+          request,
+          retrieval.version(request, true),
+          () -> retrieval.retrieveScoped(
+              request, scope.classificationCeiling(), scope.sourceIds()));
     } catch (com.fraudengine.platform.gateway.ModelUnavailableException unavailable) {
       found = retrieval.degradedScoped(request, scope.classificationCeiling(), scope.sourceIds());
     }
@@ -92,9 +90,8 @@ public class CaseEvidenceService implements KnowledgeApi {
     return admission.call(
         () -> {
           var scope = cases.evidenceScope(caseId);
-          var result =
-              retrieval.retrievePinned(
-                  request, scope.classificationCeiling(), scope.sourceIds(), release);
+          var result = retrieval.retrievePinned(
+              request, scope.classificationCeiling(), scope.sourceIds(), release);
           validator.validateRead(caseId, result);
           return result;
         });
