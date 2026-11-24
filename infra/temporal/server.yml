@@ -1,0 +1,93 @@
+# ============================================================================
+# FILE: infra/temporal/server.yml
+# PURPOSE: Configure single-node staging persistence and private service ports.
+# OWNER: Platform & Operations
+# SINCE: week-34
+# RELATED: infra/terraform/ecs.tf
+# NOTES: Contains no credentials. Images run privately and require reviewed deployment inputs.
+# ============================================================================
+log:
+  stdout: true
+  level: warn
+persistence:
+  numHistoryShards: 4
+  defaultStore: default
+  visibilityStore: visibility
+  datastores:
+    default:
+      sql:
+        pluginName: postgres12
+        databaseName: temporal
+        connectAddr: __DATABASE_HOST__:5432
+        connectProtocol: tcp
+        user: temporal_owner
+        passwordCommand:
+          command: /bin/sh
+          args: ["-ec", 'printf %s "$POSTGRES_PWD"']
+          timeout: 3s
+        maxConns: 10
+        maxIdleConns: 5
+        maxConnLifetime: 1h
+        tls:
+          enabled: __TLS_ENABLED__
+          caFile: /etc/temporal/aws-rds.pem
+          enableHostVerification: true
+          serverName: __DATABASE_HOST__
+    visibility:
+      sql:
+        pluginName: postgres12
+        databaseName: temporal_visibility
+        connectAddr: __DATABASE_HOST__:5432
+        connectProtocol: tcp
+        user: temporal_owner
+        passwordCommand:
+          command: /bin/sh
+          args: ["-ec", 'printf %s "$POSTGRES_PWD"']
+          timeout: 3s
+        maxConns: 5
+        maxIdleConns: 2
+        maxConnLifetime: 1h
+        tls:
+          enabled: __TLS_ENABLED__
+          caFile: /etc/temporal/aws-rds.pem
+          enableHostVerification: true
+          serverName: __DATABASE_HOST__
+global:
+  membership:
+    maxJoinDuration: 30s
+    broadcastAddress: __PRIVATE_IP__
+  pprof:
+    port: 0
+services:
+  frontend:
+    rpc:
+      grpcPort: 7233
+      membershipPort: 6933
+      bindOnIP: 0.0.0.0
+  history:
+    rpc:
+      grpcPort: 7234
+      membershipPort: 6934
+      bindOnIP: 0.0.0.0
+  matching:
+    rpc:
+      grpcPort: 7235
+      membershipPort: 6935
+      bindOnIP: 0.0.0.0
+  worker:
+    rpc:
+      grpcPort: 7239
+      membershipPort: 6939
+      bindOnIP: 0.0.0.0
+clusterMetadata:
+  enableGlobalNamespace: false
+  failoverVersionIncrement: 10
+  masterClusterName: active
+  currentClusterName: active
+  clusterInformation:
+    active:
+      enabled: true
+      initialFailoverVersion: 1
+      rpcAddress: __PRIVATE_IP__:7233
+publicClient:
+  hostPort: __PRIVATE_IP__:7233

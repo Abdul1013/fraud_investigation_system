@@ -1,0 +1,13 @@
+# ============================================================================
+# FILE: infra/temporal/Dockerfile.schema.dockerignore
+# PURPOSE: Exclude secrets and private runtime state from the service image context.
+# OWNER: Platform & Operations
+# SINCE: week-34
+# RELATED: infra/terraform/ecs.tf
+# NOTES: Contains no credentials. Images run privately and require reviewed deployment inputs.
+# ============================================================================
+**
+!infra/
+!infra/temporal/
+!infra/temporal/server.yml
+!infra/temporal/schema-entrypoint.sh
