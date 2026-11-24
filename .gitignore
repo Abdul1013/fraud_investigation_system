@@ -1,3 +1,4 @@
+# WEEK 27: ignore project-local model/runtime downloads and generated development artifacts.
 # Java / Maven
 /target/
 **/target/
@@ -6,6 +7,10 @@
 *.jar
 *.war
 *.ear
+
+# Python helper caches
+__pycache__/
+*.py[cod]
 
 # IDE
 .idea/
@@ -23,3 +28,8 @@
 # Local ingestion raw sources and generated reports
 /knowledge-raw/
 /reports/
+
+/.runtime/
+
+# Generated Terraform provider cache
+**/.terraform/

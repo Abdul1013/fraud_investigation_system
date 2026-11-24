@@ -1,0 +1,18 @@
+# ============================================================================
+# FILE: .dockerignore
+# PURPOSE: Limit the production build context to required source and packaging inputs.
+# OWNER: Platform & Operations
+# SINCE: week-34
+# RELATED: Dockerfile
+# NOTES: Secrets, Git metadata, private delivery snapshots, models and test outputs never enter this context.
+# ============================================================================
+**
+!pom.xml
+!Dockerfile
+!src/
+!src/main/
+!src/main/**
+!infra/
+!infra/container/
+!infra/container/entrypoint.sh
+!infra/container/HealthProbe.java
