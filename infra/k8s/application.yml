@@ -1,0 +1,87 @@
+# ============================================================================
+# FILE: infra/k8s/application.yml
+# PURPOSE: Run a non-root API pod behind a ClusterIP service and explicit learning configuration.
+# OWNER: Platform & Operations
+# SINCE: week-34
+# RELATED: docs/week34-implementation.md
+# NOTES: Local Kubernetes learning only. No LoadBalancer, EKS, cloud secret or production identity.
+# ============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fraud-api
+  namespace: fraud-learning
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fraud-api
+  template:
+    metadata:
+      labels:
+        app: fraud-api
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+      containers:
+        - name: api
+          image: fraud-engine:week34-review
+          imagePullPolicy: Never
+          env:
+            - {name: FRAUD_ROLE, value: api}
+            - {name: FRAUD_PROFILES, value: local-learning}
+            - {name: POSTGRES_URL, value: 'jdbc:postgresql://database:5432/fraud'}
+            - {name: POSTGRES_USER, value: fraud_runtime}
+            - {name: SPRING_FLYWAY_ENABLED, value: 'false'}
+            - {name: SPRING_BATCH_JDBC_INITIALIZE_SCHEMA, value: never}
+            - {name: INVESTIGATION_ENGINE, value: local}
+            - {name: INVESTIGATION_MODEL_PROVIDER, value: disabled}
+            - {name: AI_RELEASE_FILE, value: ''}
+            - {name: MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED, value: 'true'}
+            - {name: MANAGEMENT_ENDPOINT_HEALTH_GROUP_READINESS_INCLUDE, value: 'readinessState,db'}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: learning-database
+                  key: runtime
+          ports:
+            - containerPort: 8080
+          startupProbe:
+            httpGet: {path: /actuator/health/readiness, port: 8080}
+            failureThreshold: 60
+            periodSeconds: 2
+          readinessProbe:
+            httpGet: {path: /actuator/health/readiness, port: 8080}
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: {path: /actuator/health/liveness, port: 8080}
+            periodSeconds: 10
+          resources:
+            requests: {cpu: 250m, memory: 512Mi}
+            limits: {cpu: '1', memory: 1Gi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - {name: scratch, mountPath: /tmp}
+      volumes:
+        - name: scratch
+          emptyDir:
+            sizeLimit: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fraud-api
+  namespace: fraud-learning
+spec:
+  type: ClusterIP
+  selector:
+    app: fraud-api
+  ports:
+    - {port: 8080, targetPort: 8080}

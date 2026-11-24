@@ -1,0 +1,96 @@
+# ============================================================================
+# FILE: infra/k8s/migrate-job.yml
+# PURPOSE: Run the migrate phase explicitly before the learning application.
+# OWNER: Platform & Operations
+# SINCE: week-34
+# RELATED: docs/week34-implementation.md
+# NOTES: Local Kubernetes learning only. No LoadBalancer, EKS, cloud secret or production identity.
+# ============================================================================
+{
+  "apiVersion": "batch/v1",
+  "kind": "Job",
+  "metadata": {
+    "name": "fraud-migrate",
+    "namespace": "fraud-learning"
+  },
+  "spec": {
+    "backoffLimit": 0,
+    "template": {
+      "spec": {
+        "restartPolicy": "Never",
+        "securityContext": {
+          "runAsNonRoot": true,
+          "runAsUser": 10001,
+          "fsGroup": 10001
+        },
+        "containers": [
+          {
+            "name": "migrate",
+            "image": "fraud-engine:week34-review",
+            "imagePullPolicy": "Never",
+            "env": [
+              {
+                "name": "FRAUD_ROLE",
+                "value": "migrate"
+              },
+              {
+                "name": "FRAUD_PROFILES",
+                "value": "local-learning"
+              },
+              {
+                "name": "POSTGRES_URL",
+                "value": "jdbc:postgresql://database:5432/fraud"
+              },
+              {
+                "name": "POSTGRES_USER",
+                "value": "fraud_migrator"
+              },
+              {
+                "name": "POSTGRES_PASSWORD",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "learning-database",
+                    "key": "migrator"
+                  }
+                }
+              }
+            ],
+            "securityContext": {
+              "allowPrivilegeEscalation": false,
+              "readOnlyRootFilesystem": true,
+              "capabilities": {
+                "drop": [
+                  "ALL"
+                ]
+              }
+            },
+            "volumeMounts": [
+              {
+                "name": "scratch",
+                "mountPath": "/tmp"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "cpu": "1",
+                "memory": "1Gi"
+              }
+            }
+          }
+        ],
+        "volumes": [
+          {
+            "name": "scratch",
+            "emptyDir": {
+              "sizeLimit": "128Mi"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
