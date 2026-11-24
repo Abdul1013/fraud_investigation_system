@@ -1,0 +1,151 @@
+{
+  "attributes": {
+    "_file": "infra/keycloak/fraud-realm.json",
+    "_purpose": "Secret-free local PKCE and password-plus-OTP step-up realm; enroll identities separately",
+    "_since": "week-31",
+    "_notes": "Public PKCE only; password and OTP required at level 2; no credentials or users in this file",
+    "acr.loa.map": "{\"1\": 1, \"2\": 2}"
+  },
+  "realm": "fraud",
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": false,
+  "bruteForceProtected": true,
+  "accessTokenLifespan": 300,
+  "browserFlow": "fraud-browser",
+  "clients": [
+    {
+      "clientId": "fraud-learning",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "${FRAUD_PUBLIC_API}/auth/index.html"
+      ],
+      "webOrigins": [
+        "${FRAUD_PUBLIC_API}"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "acr.loa.map": "{\"1\": 1, \"2\": 2}",
+        "default.acr.values": "1"
+      },
+      "protocolMappers": [
+        {
+          "name": "fraud-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.custom.audience": "fraud-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    }
+  ],
+  "authenticationFlows": [
+    {
+      "alias": "fraud-browser",
+      "providerId": "basic-flow",
+      "topLevel": true,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "auth-cookie",
+          "requirement": "ALTERNATIVE",
+          "priority": 0,
+          "authenticatorFlow": false
+        },
+        {
+          "flowAlias": "fraud-forms",
+          "requirement": "ALTERNATIVE",
+          "priority": 10,
+          "authenticatorFlow": true
+        }
+      ]
+    },
+    {
+      "alias": "fraud-forms",
+      "providerId": "basic-flow",
+      "topLevel": false,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "flowAlias": "password-level",
+          "requirement": "CONDITIONAL",
+          "priority": 10,
+          "authenticatorFlow": true
+        },
+        {
+          "flowAlias": "otp-level",
+          "requirement": "CONDITIONAL",
+          "priority": 20,
+          "authenticatorFlow": true
+        }
+      ]
+    },
+    {
+      "alias": "password-level",
+      "providerId": "basic-flow",
+      "topLevel": false,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "conditional-level-of-authentication",
+          "requirement": "REQUIRED",
+          "priority": 0,
+          "authenticatorFlow": false,
+          "authenticatorConfig": "loa1"
+        },
+        {
+          "authenticator": "auth-username-password-form",
+          "requirement": "REQUIRED",
+          "priority": 10,
+          "authenticatorFlow": false
+        }
+      ]
+    },
+    {
+      "alias": "otp-level",
+      "providerId": "basic-flow",
+      "topLevel": false,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "conditional-level-of-authentication",
+          "requirement": "REQUIRED",
+          "priority": 0,
+          "authenticatorFlow": false,
+          "authenticatorConfig": "loa2"
+        },
+        {
+          "authenticator": "auth-otp-form",
+          "requirement": "REQUIRED",
+          "priority": 10,
+          "authenticatorFlow": false
+        }
+      ]
+    }
+  ],
+  "authenticatorConfig": [
+    {
+      "alias": "loa1",
+      "config": {
+        "loa-condition-level": "1",
+        "loa-max-age": "0"
+      }
+    },
+    {
+      "alias": "loa2",
+      "config": {
+        "loa-condition-level": "2",
+        "loa-max-age": "0"
+      }
+    }
+  ]
+}
