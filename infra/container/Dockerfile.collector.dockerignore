@@ -1,0 +1,6 @@
+# FILE: infra/container/Dockerfile.collector.dockerignore
+# PURPOSE: Include only public collector configuration. OWNER: Platform. SINCE: week-34.
+**
+!observability/
+!observability/otel/
+!observability/otel/week34-aws-collector.yml

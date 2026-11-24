@@ -1,0 +1,13 @@
+# ============================================================================
+# FILE: infra/container/Dockerfile.collector
+# PURPOSE: Pin the private staging OTLP receiver and AWS task-role exporters.
+# OWNER: Platform & Operations
+# SINCE: week-34
+# RELATED: observability/otel/week34-aws-collector.yml
+# NOTES: No credentials or provider payloads are baked into this image.
+# ============================================================================
+FROM otel/opentelemetry-collector-contrib:0.163.2@sha256:7f22d2a6748110ffb6a59bc0df448bccbf501cdb667d610ede4c61d3863d5849
+COPY --chmod=0444 observability/otel/week34-aws-collector.yml /etc/otelcol-contrib/staging.yml
+USER 10001:10001
+ENTRYPOINT ["/otelcol-contrib"]
+CMD ["--config=/etc/otelcol-contrib/staging.yml"]

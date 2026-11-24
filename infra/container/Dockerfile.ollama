@@ -1,0 +1,27 @@
+# ============================================================================
+# FILE: infra/container/Dockerfile.ollama
+# PURPOSE: Package verified weights with only the pinned vendor CPU runtime required by Fargate.
+# OWNER: Platform & Operations
+# SINCE: week-34
+# RELATED: package_local_models.py, ModelSidecarPackagingTest
+# NOTES: GPU directories are not copied. Model blobs/catalogue are immutable; metadata is private scratch.
+# ============================================================================
+FROM ollama/ollama:0.40.3@sha256:adca95a12c2b386a8f9a995e7fa0600e187e3323b5e5522f5a6c3b1ec73eff99 AS distribution
+FROM eclipse-temurin:21-jre-noble@sha256:604429d8095873ed54c1a38bd3e4caf3b7a6c5db3656f827043fe613d3af485a AS runtime
+ARG SOURCE_DATE_EPOCH=1792886400
+# Use the already pinned Ubuntu runtime and copy vendor CPU files/dependencies only.
+RUN --mount=from=distribution,source=/usr/lib,target=/vendor-lib,ro \
+    --mount=from=distribution,source=/usr/share/doc,target=/vendor-doc,ro \
+    mkdir -p /usr/lib/ollama /usr/share/licenses/ollama-cpu && \
+    find /vendor-lib/ollama -maxdepth 1 \( -type f -o -type l \) -exec cp -P {} /usr/lib/ollama/ \; && \
+    find /vendor-lib -path /vendor-lib/ollama -prune -o \( -type f -o -type l \) \( -name 'libopenblas*.so*' -o -name 'libgfortran.so*' -o -name 'libquadmath.so*' -o -name 'libgomp.so*' -o -name 'libomp.so*' \) -exec cp -L {} /usr/lib/ollama/ \; && \
+    find /vendor-doc -maxdepth 1 -type d \( -name 'libopenblas*' -o -name 'libgfortran*' -o -name 'libquadmath*' -o -name 'libgomp*' -o -name 'gcc-*-base' \) -exec cp -r {} /usr/share/licenses/ollama-cpu/ \;
+COPY --from=distribution --chmod=0555 /usr/bin/ollama /bin/ollama
+COPY --chown=10001:10001 models/blobs/ /models/blobs/
+COPY --chown=10001:10001 models/manifests-v2/ /models/manifests-v2/
+RUN mkdir -p /models/manifests && ln -s /tmp/model-metadata /models/metadata
+COPY --chmod=0555 ollama-entrypoint.sh /ollama-entrypoint.sh
+USER 10001:10001
+ENV LD_LIBRARY_PATH=/usr/lib/ollama OLLAMA_LLM_LIBRARY=cpu OLLAMA_VULKAN=false OLLAMA_NOPRUNE=true OLLAMA_NOHISTORY=true OLLAMA_NO_CLOUD=true OLLAMA_HOST=127.0.0.1:11434 OLLAMA_MODELS=/models HOME=/tmp OLLAMA_MAX_QUEUE=4 OLLAMA_NUM_PARALLEL=1 OLLAMA_MAX_LOADED_MODELS=2
+ENTRYPOINT ["/ollama-entrypoint.sh"]
+CMD ["serve"]

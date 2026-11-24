@@ -1,0 +1,21 @@
+{
+  "_file": "infra/container/build-inputs.json",
+  "_purpose": "Record immutable application-image inputs; update through a reviewed release",
+  "_since": "week-34",
+  "builder": "maven:3.9.11-eclipse-temurin-21@sha256:6fdc855a6ed81d288ca7ca37ac6ff5e9308b612485c0801d70b25a858c83d237",
+  "runtime": "eclipse-temurin:21-jre-noble@sha256:604429d8095873ed54c1a38bd3e4caf3b7a6c5db3656f827043fe613d3af485a",
+  "rdsTrustBundleSha256": "90a6f1a7978a1b1b096dca6c57511ca48d3b8cf052f8e704baf358f34ea2f21b",
+  "terraformVersion": "1.14.9",
+  "terraformDarwinArm64Sha256": "5bc0b11b7a63c8984a41d82523356df46f7833c2e9651a39a7f8919422de5cde",
+  "awsProviderVersion": "6.62.0",
+  "sourceDateEpoch": 1792886400,
+  "rdsEngine": "16.15",
+  "rdsVectorExtension": "0.8.2",
+  "extensionSource": "https://docs.aws.amazon.com/AmazonRDS/latest/PostgreSQLReleaseNotes/postgresql-extensions.html",
+  "temporalServer": "temporalio/server:1.32.1@sha256:acecbab5b0b8ae9cf4012b508866ca97feda3709577bf157b537239f40029049",
+  "temporalSchemaTools": "temporalio/admin-tools:1.32.1@sha256:9ef0dc5b063bf4ffd5c1512de72e0e73e225bd2c7006a18ce69bd592a8862a83",
+  "keycloak": "quay.io/keycloak/keycloak:26.8.1@sha256:a78d6b79572168cb25886b80a8b5b8d4ed4390743e3eecb810538683e209dd6b",
+  "ollama": "ollama/ollama:0.40.3@sha256:adca95a12c2b386a8f9a995e7fa0600e187e3323b5e5522f5a6c3b1ec73eff99",
+  "collector": "otel/opentelemetry-collector-contrib:0.163.2@sha256:7f22d2a6748110ffb6a59bc0df448bccbf501cdb667d610ede4c61d3863d5849",
+  "terraformLinuxAmd64Sha256": "2e5cffc20a0b48a67a76268723bd5a10b8666f69b2aa4f04906e206726bedd63"
+}
